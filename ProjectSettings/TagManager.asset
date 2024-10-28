@@ -3,7 +3,18 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Circle
+  - Level1Stars
+  - Level2Stars
+  - Level3Stars
+  - Level4Stars
+  - Level5Stars
+  - Level6Stars
+  - Level7Stars
+  - Level8Stars
+  - Level9Stars
+  - Level10Stars
   layers:
   - Default
   - TransparentFX
