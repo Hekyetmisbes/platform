@@ -3,69 +3,49 @@ using UnityEngine;
 public class PickerCharacterController : MonoBehaviour
 {
     public float moveSpeed = 5f;  // Hareket hýzý
-    private Rigidbody2D rb;       // Rigidbody bileþeni
-    private SpriteRenderer spriteRenderer; // SpriteRenderer bileþeni
-    private bool canMoveRight = true;  // Saða hareket edebilir mi?
-    private bool canMoveLeft = true;   // Sola hareket edebilir mi?
+
+    private Rigidbody2D playerRB;   // Rigidbody bileþeni
+
+    private SpriteRenderer spriteRenderer;
+
+    bool facingRight = true;
+
+    Animator playerAnimator;
 
     void Start()
     {
         // Rigidbody2D ve SpriteRenderer bileþenlerini al
-        rb = GetComponent<Rigidbody2D>();
+        playerRB = GetComponent<Rigidbody2D>();
+        playerAnimator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     void Update()
     {
-        // Sað-sol hareketini almak için yatay input
-        float moveInput = Input.GetAxis("Horizontal");
+        HorizontalMove();
+    }
 
-        // Hareket yönünü kontrol et
-        if ((moveInput > 0 && canMoveRight) || (moveInput < 0 && canMoveLeft))
-        {
-            rb.velocity = new Vector2(moveInput * moveSpeed, rb.velocity.y);
-        }
-        else
-        {
-            rb.velocity = new Vector2(0, rb.velocity.y);
-        }
+    void HorizontalMove()
+    {
+        playerRB.velocity = new Vector2(Input.GetAxis("Horizontal") * moveSpeed, playerRB.velocity.y);
 
-        // Yön deðiþiminde sprite'ý flip et
-        if (moveInput < 0 && canMoveLeft)
+        playerAnimator.SetFloat("playerSpeed", Mathf.Abs(playerRB.velocity.x));
+
+        if (playerRB.velocity.x > 0 && !facingRight)
         {
-            spriteRenderer.flipX = true;
+            Flip();
         }
-        else if (moveInput > 0 && canMoveRight)
+        else if (playerRB.velocity.x < 0 && facingRight)
         {
-            spriteRenderer.flipX = false;
+            Flip();
         }
     }
 
-    void OnCollisionEnter2D(Collision2D collision)
+    void Flip()
     {
-        // Sað duvara çarptýysa saða hareketi durdur
-        if (collision.gameObject.name == "BlindWallRight")
-        {
-            canMoveRight = false;
-        }
-        // Sol duvara çarptýysa sola hareketi durdur
-        else if (collision.gameObject.name == "BlindWallLeft")
-        {
-            canMoveLeft = false;
-        }
-    }
-
-    void OnCollisionExit2D(Collision2D collision)
-    {
-        // Sað duvardan ayrýldýðýnda saða hareket edebilir
-        if (collision.gameObject.name == "BlindWallRight")
-        {
-            canMoveRight = true;
-        }
-        // Sol duvardan ayrýldýðýnda sola hareket edebilir
-        else if (collision.gameObject.name == "BlindWallLeft")
-        {
-            canMoveLeft = true;
-        }
+        facingRight = !facingRight;
+        Vector3 playerScale = transform.localScale;
+        playerScale.x *= -1;
+        transform.localScale = playerScale;
     }
 }
