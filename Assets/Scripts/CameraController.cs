@@ -23,6 +23,7 @@ public class CameraController : MonoBehaviour
     {
         Vector3 targetCamPos = target.position + offset;
         targetCamPos.x = Mathf.Clamp(targetCamPos.x, minX, maxX); // Limit x value
+        targetCamPos.y = 0f; // Keep y value
         transform.position = Vector3.Lerp(transform.position, targetCamPos, smoothing * Time.deltaTime);
     }
 }
