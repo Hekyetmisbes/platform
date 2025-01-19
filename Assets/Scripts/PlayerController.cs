@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -8,17 +9,21 @@ public class PlayerController : MonoBehaviour
 
     bool facingRight = true;
 
-    public bool isGrounded = false;
+    private bool isGrounded = false;
 
-    public float moveSpeed = 5f;
-    public float jumpForce = 5f;
+    [SerializeField] private float moveSpeed = 5f;
 
-    public float jumpFrequency = 1f;
-    public float nextJumpTime;
+    [SerializeField] private float jumpForce = 250f;
 
-    public Transform groundCheckPosition;
-    public float groundCheckRadius;
-    public LayerMask groundLayer;
+    private float jumpFrequency = 0.8f;
+    private float nextJumpTime = 0f;
+
+    [SerializeField] Transform groundCheckPosition;
+    [SerializeField] float groundCheckRadius;
+    [SerializeField] LayerMask groundLayer;
+
+    private bool isFinish = false;
+    private bool isDead = false;
 
     // Start is called before the first frame update
     void Start()
@@ -34,10 +39,15 @@ public class PlayerController : MonoBehaviour
 
         GroundCheck();
 
-        if (Input.GetAxis("Vertical") > 0 && isGrounded && (nextJumpTime < Time.timeSinceLevelLoad))
+        if ((Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)) && isGrounded && (nextJumpTime < Time.timeSinceLevelLoad))
         {
             nextJumpTime = Time.timeSinceLevelLoad + jumpFrequency;
             Jump();
+        }
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
     }
 
@@ -74,5 +84,54 @@ public class PlayerController : MonoBehaviour
     {
         isGrounded = Physics2D.OverlapCircle(groundCheckPosition.position, groundCheckRadius, groundLayer);
         playerAnimator.SetBool("isGrounded", isGrounded);
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.tag == "Finish")
+        {
+            isFinish = true;
+        }
+
+        if (collision.gameObject.tag == "Dead")
+        {
+            isDead = true;
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "ExtraJump")
+        {
+            jumpForce *= 1.5f;
+            if (jumpForce > 750f)
+            {
+                jumpForce = 750f;
+            }
+        }
+        if (collision.gameObject.tag == "LessJump")
+        {
+            jumpForce *= 0.5f;
+            if (jumpForce < 250f)
+            {
+                jumpForce = 250f;
+            }
+        }
+    }
+
+    public bool IsFinish
+    {
+        get
+        {
+            return isFinish;
+        }
+    }
+
+    public bool IsDead
+    {
+        get
+        {
+            return isDead;
+        }
     }
 }

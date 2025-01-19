@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8836939765333231418}
   - component: {fileID: 8187448529841794040}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: LittleFlat
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -44,7 +44,7 @@ BoxCollider2D:
   m_GameObject: {fileID: 2109761811123266566}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 025b5d4501c61164a987972f4df29583, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -90,7 +90,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4312067663649200590}
   - component: {fileID: 3718810849783826855}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Last64x32
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -174,7 +174,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3151200124380368368}
   - component: {fileID: 61005924199437308}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Mid64x32
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -258,7 +258,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3850723776789564060}
   - component: {fileID: 6231694392507941348}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: First64x32
   m_TagString: Untagged
   m_Icon: {fileID: 0}

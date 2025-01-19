@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -7,7 +5,7 @@ public class MenuButtonController : MonoBehaviour
 {
     public void PlayButton()
     {
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene(2);
     }
 
     public void ExitButton()
@@ -17,6 +15,11 @@ public class MenuButtonController : MonoBehaviour
 
     public void SettingsButton()
     {
-        SceneManager.LoadScene(2);
+        SceneManager.LoadScene(1);
+    }
+
+    public void BackButton()
+    {
+        SceneManager.LoadScene(0);
     }
 }

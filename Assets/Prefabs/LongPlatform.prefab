@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4620026948579727422}
   - component: {fileID: 2939746441915971318}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: MidCube64x64 (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8327630211153357427}
   - component: {fileID: 3172580315971320589}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: MidCube64x64 (8)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -178,7 +178,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8991879520235855986}
   - component: {fileID: 8327636048466924905}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: MidCube64x64 (6)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -262,7 +262,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1984114770857705822}
   - component: {fileID: 3584261924702567989}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: MidCube64x64 (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -346,7 +346,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1865051237669856155}
   - component: {fileID: 1367502923691410785}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: BackCube64x64 (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -430,7 +430,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8540447448104726672}
   - component: {fileID: 4218005492882015873}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: MidCube64x64 (7)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -514,7 +514,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5648100383901965650}
   - component: {fileID: 5309091000111995792}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: LongPlatform
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -552,7 +552,7 @@ BoxCollider2D:
   m_GameObject: {fileID: 8906796221309796030}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 025b5d4501c61164a987972f4df29583, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -598,7 +598,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1699648520556103309}
   - component: {fileID: 3471213088581732011}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: HeadCube64x64 (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

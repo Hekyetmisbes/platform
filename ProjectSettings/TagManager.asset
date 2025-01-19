@@ -15,6 +15,9 @@ TagManager:
   - Level8Stars
   - Level9Stars
   - Level10Stars
+  - Dead
+  - ExtraJump
+  - LessJump
   layers:
   - Default
   - TransparentFX

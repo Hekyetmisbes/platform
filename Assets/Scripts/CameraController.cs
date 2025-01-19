@@ -3,12 +3,15 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
     // Control camera position
-    public Transform target;
+    [SerializeField] Transform target;
 
-    public float smoothing = 5f;
+    private float smoothing = 5f;
 
-    public float minX = 0f;
-    public float maxX = 78.5f;
+    [SerializeField] float minY = 0f;
+    [SerializeField] float maxY = 0f;
+
+    [SerializeField] float minX = 0f;
+    [SerializeField] float maxX = 78.5f;
 
     Vector3 offset;
 
@@ -22,8 +25,23 @@ public class CameraController : MonoBehaviour
     void LateUpdate()
     {
         Vector3 targetCamPos = target.position + offset;
+
+        if(target.transform.localScale.x < 0)
+        {
+            targetCamPos.x -= 5f;
+        }
+        
+        ChangeCamTransform(targetCamPos);
+    }
+
+    void ChangeCamTransform(Vector3 targetCamPos)
+    {
         targetCamPos.x = Mathf.Clamp(targetCamPos.x, minX, maxX); // Limit x value
-        targetCamPos.y = 0f; // Keep y value
+        if(targetCamPos.y < 5.5f)
+        {
+            targetCamPos.y = minY;
+        }
+        targetCamPos.y = Mathf.Clamp(targetCamPos.y, minY, maxY); ; // Keep y value
         transform.position = Vector3.Lerp(transform.position, targetCamPos, smoothing * Time.deltaTime);
     }
 }

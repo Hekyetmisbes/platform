@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3694203675363819945}
   - component: {fileID: 6875084895553957405}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: LongFlatPlat
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -48,7 +48,7 @@ BoxCollider2D:
   m_GameObject: {fileID: 803295578223315562}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 025b5d4501c61164a987972f4df29583, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -94,7 +94,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1377625470783445330}
   - component: {fileID: 9015335602192313411}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: LittleFlat64x32 (8)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -178,7 +178,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7498894085711464810}
   - component: {fileID: 3502475842855604425}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: LittleFlat64x32 (13)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -262,7 +262,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2156761669070540259}
   - component: {fileID: 8231415728324626577}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: LittleFlat64x32 (14)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -346,7 +346,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2884225807900414608}
   - component: {fileID: 5607586936303601198}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: LittleFlat64x32 (12)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -430,7 +430,7 @@ GameObject:
   m_Component:
   - component: {fileID: 420021197292202925}
   - component: {fileID: 3319881100089630154}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: LittleFlat64x32 (11)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -514,7 +514,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8498346302619005670}
   - component: {fileID: 3001272322163689981}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: LittleFlat64x32 (9)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -598,7 +598,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2647927432992095795}
   - component: {fileID: 5305347935086014365}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: LittleFlat64x32 (10)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

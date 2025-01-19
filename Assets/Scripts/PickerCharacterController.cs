@@ -2,9 +2,9 @@ using UnityEngine;
 
 public class PickerCharacterController : MonoBehaviour
 {
-    public float moveSpeed = 5f;  // Hareket hýzý
+    private float moveSpeed = 7.5f;
 
-    private Rigidbody2D playerRB;   // Rigidbody bileþeni
+    private Rigidbody2D playerRB;
 
     private SpriteRenderer spriteRenderer;
 
@@ -12,9 +12,12 @@ public class PickerCharacterController : MonoBehaviour
 
     Animator playerAnimator;
 
+    [SerializeField] private PauseMenuScript pauseMenuScript;
+    
     void Start()
     {
-        // Rigidbody2D ve SpriteRenderer bileþenlerini al
+        AudioListener.volume = 1f;
+        Time.timeScale = 1;
         playerRB = GetComponent<Rigidbody2D>();
         playerAnimator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -23,6 +26,10 @@ public class PickerCharacterController : MonoBehaviour
     void Update()
     {
         HorizontalMove();
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            pauseMenuScript.EscapeControl();
+        }
     }
 
     void HorizontalMove()

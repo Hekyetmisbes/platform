@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6794381281900734941}
   - component: {fileID: 4363360208745894077}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: MidCubeTwo64x64
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3428549359675310157}
   - component: {fileID: 7896729752106880628}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: BackCubeTwo64x64
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -178,7 +178,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6432478069359350905}
   - component: {fileID: 6998436241175069794}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: LittleCubePlat
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -212,7 +212,7 @@ BoxCollider2D:
   m_GameObject: {fileID: 7937067299379340093}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 025b5d4501c61164a987972f4df29583, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -258,7 +258,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8887088898363105035}
   - component: {fileID: 5091077194572860113}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: HeadCubeTwo64x64
   m_TagString: Untagged
   m_Icon: {fileID: 0}

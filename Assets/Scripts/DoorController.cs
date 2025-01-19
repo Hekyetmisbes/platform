@@ -1,49 +1,42 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using TMPro;
 
 public class DoorController : MonoBehaviour
 {
-    public string levelName; // Kapýnýn temsil ettiði bölümün ismi
-    private bool isPlayerNear = false; // Oyuncu kapýya yakýn mý?
-    public TextMeshProUGUI uiText; // Ekranda gösterilecek uyarý (TextMeshPro)
+    [SerializeField] private string levelName;
+    private bool isPlayerNear = false;
+    [SerializeField] private TextMeshProUGUI uiText;
 
-    void Start()
-    {
-        // "EnterText" adlý TextMeshPro bileþenini bul ve baþlangýçta gizle
-        // uiText = GameObject.Find("EnterText").GetComponent<TextMeshProUGUI>();
-        /*if (uiText != null)
-        {
-            uiText.gameObject.SetActive(false);
-        }*/
-    }
+    [SerializeField] private LevelLoader levelLoader;
 
     void Update()
     {
-        // E tuþuna basýldýðýnda kapýya yakýnsa sahne geçiþini yap
+        PlayScene();
+    }
+
+    void PlayScene()
+    {
         if (isPlayerNear && Input.GetKeyDown(KeyCode.E))
         {
-            SceneManager.LoadScene(levelName);
+            levelLoader.LoadLevel(levelName);
         }
     }
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        // Karakter kapýya yaklaþtýðýnda uyarýyý göster
         if (other.CompareTag("Player"))
         {
             isPlayerNear = true;
             if (uiText != null)
             {
                 uiText.gameObject.SetActive(true);
-                uiText.text = "Press 'E' for Enter";
+                uiText.text = "Press 'E' to Enter";
             }
         }
     }
 
     void OnTriggerExit2D(Collider2D other)
     {
-        // Karakter kapýdan uzaklaþtýðýnda uyarýyý gizle
         if (other.CompareTag("Player"))
         {
             isPlayerNear = false;

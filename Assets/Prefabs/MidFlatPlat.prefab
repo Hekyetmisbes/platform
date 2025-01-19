@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1421080860969750314}
   - component: {fileID: 549706126233886969}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: LittleFlat64x32 (6)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1097907668064593065}
   - component: {fileID: 8388868277289910476}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: LittleFlat64x32 (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -178,7 +178,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9166437071794686570}
   - component: {fileID: 5371497616689090871}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: LittleFlat64x32 (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -262,7 +262,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5061923584263893432}
   - component: {fileID: 344351300955192809}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: LittleFlat64x32 (7)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -346,7 +346,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1276180332870663002}
   - component: {fileID: 654374624437345778}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: LittleFlat64x32 (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -430,7 +430,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8993213855411609101}
   - component: {fileID: 6035201844902419340}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: MidFlatPlat
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -466,7 +466,7 @@ BoxCollider2D:
   m_GameObject: {fileID: 9216579474625968234}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 025b5d4501c61164a987972f4df29583, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
