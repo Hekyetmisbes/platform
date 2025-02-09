@@ -12,8 +12,8 @@ Bu proje, **Unity oyun motoru** kullanılarak geliştirilmiş **2D bir platform 
 
 ## 📷 Ekran Görüntüleri  
 *Aşağıya oyundan bazı ekran görüntüleri ekleyebilirsiniz.*  
-![Game Screenshot](https://imgur.com/a/vFZlX55)
-![Game Screenshot](https://imgur.com/dyKLDYC)
+![Game Screenshot](Assets/0AII5Y.png)
+![Game Screenshot](Assets/nEjpXi.png)
 
 ## 🛠 Kullanılan Teknolojiler  
 - **Geliştirme Aracı**: Unity Engine  
