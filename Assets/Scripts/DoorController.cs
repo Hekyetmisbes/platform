@@ -16,34 +16,24 @@ public class DoorController : MonoBehaviour
 
     void PlayScene()
     {
-        if (isPlayerNear && Input.GetKeyDown(KeyCode.E))
-        {
-            levelLoader.LoadLevel(levelName);
-        }
+        if (isPlayerNear && Input.GetKeyDown(KeyCode.E)) levelLoader?.LoadLevel(levelName);
     }
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Player"))
+        if (!other.CompareTag("Player")) return;
+        isPlayerNear = true;
+        if (uiText != null)
         {
-            isPlayerNear = true;
-            if (uiText != null)
-            {
-                uiText.gameObject.SetActive(true);
-                uiText.text = "Press 'E' to Enter";
-            }
+            uiText.gameObject.SetActive(true);
+            uiText.text = "Press 'E' to Enter";
         }
     }
 
     void OnTriggerExit2D(Collider2D other)
     {
-        if (other.CompareTag("Player"))
-        {
-            isPlayerNear = false;
-            if (uiText != null)
-            {
-                uiText.gameObject.SetActive(false);
-            }
-        }
+        if (!other.CompareTag("Player")) return;
+        isPlayerNear = false;
+        if (uiText != null) uiText.gameObject.SetActive(false);
     }
 }

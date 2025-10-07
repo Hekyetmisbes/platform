@@ -8,9 +8,9 @@ public class PickerCharacterController : MonoBehaviour
 
     private SpriteRenderer spriteRenderer;
 
-    bool facingRight = true;
-
     Animator playerAnimator;
+
+    CharacterMovement movement;
 
     [SerializeField] private PauseMenuScript pauseMenuScript;
     
@@ -21,38 +21,42 @@ public class PickerCharacterController : MonoBehaviour
         playerRB = GetComponent<Rigidbody2D>();
         playerAnimator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        movement = GetComponent<CharacterMovement>();
     }
+
+    private static readonly int PlayerSpeedHash = Animator.StringToHash("playerSpeed");
 
     void Update()
     {
         HorizontalMove();
-        if(Input.GetKeyDown(KeyCode.Escape))
-        {
-            pauseMenuScript.EscapeControl();
-        }
+        if (Input.GetKeyDown(KeyCode.Escape)) pauseMenuScript?.EscapeControl();
     }
 
     void HorizontalMove()
     {
-        playerRB.velocity = new Vector2(Input.GetAxis("Horizontal") * moveSpeed, playerRB.velocity.y);
-
-        playerAnimator.SetFloat("playerSpeed", Mathf.Abs(playerRB.velocity.x));
-
-        if (playerRB.velocity.x > 0 && !facingRight)
+        float horizontal = 0f;
+        if (InputManager.Instance != null)
         {
-            Flip();
+            horizontal = InputManager.Instance.Horizontal;
         }
-        else if (playerRB.velocity.x < 0 && facingRight)
+        else
         {
-            Flip();
+            horizontal = Input.GetAxis("Horizontal");
+        }
+
+        if (movement != null)
+        {
+            movement.moveSpeed = moveSpeed; // keep local speed
+            movement.Move(horizontal);
+        }
+        else
+        {
+            Vector2 v = playerRB.linearVelocity;
+            v.x = horizontal * moveSpeed;
+            playerRB.linearVelocity = v;
+            if (playerAnimator != null) playerAnimator.SetFloat(PlayerSpeedHash, Mathf.Abs(playerRB.linearVelocity.x));
         }
     }
 
-    void Flip()
-    {
-        facingRight = !facingRight;
-        Vector3 playerScale = transform.localScale;
-        playerScale.x *= -1;
-        transform.localScale = playerScale;
-    }
+    // Flip handled by CharacterMovement component now
 }

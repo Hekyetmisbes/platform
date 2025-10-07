@@ -7,7 +7,7 @@ public class PlayerController : MonoBehaviour
 
     Animator playerAnimator;
 
-    bool facingRight = true;
+    CharacterMovement movement;
 
     private bool isGrounded = false;
 
@@ -25,54 +25,71 @@ public class PlayerController : MonoBehaviour
     private bool isFinish = false;
     private bool isDead = false;
 
-    // Start is called before the first frame update
+    // Animator parameter hashes
+    private static readonly int PlayerSpeedHash = Animator.StringToHash("playerSpeed");
+    private static readonly int IsGroundedHash = Animator.StringToHash("isGrounded");
+
     void Start()
     {
         playerRB = GetComponent<Rigidbody2D>();
         playerAnimator = GetComponent<Animator>();
+        movement = GetComponent<CharacterMovement>();
     }
 
-    // Update is called once per frame
     void Update()
     {
-        HorizontalMove();
+        // Use InputManager for platform-agnostic input
+        var im = InputManager.Instance;
+
+        HorizontalMove(im);
 
         GroundCheck();
 
-        if ((Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)) && isGrounded && (nextJumpTime < Time.timeSinceLevelLoad))
+        if (im != null)
         {
-            nextJumpTime = Time.timeSinceLevelLoad + jumpFrequency;
-            Jump();
-        }
+            if (im.JumpDown && isGrounded && (nextJumpTime < Time.timeSinceLevelLoad))
+            {
+                nextJumpTime = Time.timeSinceLevelLoad + jumpFrequency;
+                Jump();
+            }
 
-        if (Input.GetKeyDown(KeyCode.R))
+            if (im.RestartDown)
+            {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            }
+        }
+        else
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            // Fallback to legacy Input for editor / quick tests
+            if ((Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.Space)) && isGrounded && (nextJumpTime < Time.timeSinceLevelLoad))
+            {
+                nextJumpTime = Time.timeSinceLevelLoad + jumpFrequency;
+                Jump();
+            }
+
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            }
         }
     }
 
-    void HorizontalMove()
+    void HorizontalMove(InputManager im)
     {
-        playerRB.velocity = new Vector2(Input.GetAxis("Horizontal") * moveSpeed, playerRB.velocity.y);
+        float horizontal = im != null ? im.Horizontal : Input.GetAxis("Horizontal");
 
-        playerAnimator.SetFloat("playerSpeed", Mathf.Abs(playerRB.velocity.x));
-
-        if (playerRB.velocity.x > 0 && !facingRight)
+        if (movement != null)
         {
-            Flip();
+            movement.Move(horizontal);
         }
-        else if (playerRB.velocity.x < 0 && facingRight)
+        else
         {
-            Flip();
+            // fallback
+            Vector2 v = playerRB.linearVelocity;
+            v.x = horizontal * moveSpeed;
+            playerRB.linearVelocity = v;
+            if (playerAnimator != null) playerAnimator.SetFloat(PlayerSpeedHash, Mathf.Abs(playerRB.linearVelocity.x));
         }
-    }
-
-    void Flip()
-    {
-        facingRight = !facingRight;
-        Vector3 playerScale = transform.localScale;
-        playerScale.x *= -1;
-        transform.localScale = playerScale;
     }
 
     void Jump()
@@ -83,55 +100,29 @@ public class PlayerController : MonoBehaviour
     void GroundCheck()
     {
         isGrounded = Physics2D.OverlapCircle(groundCheckPosition.position, groundCheckRadius, groundLayer);
-        playerAnimator.SetBool("isGrounded", isGrounded);
+        if (playerAnimator != null) playerAnimator.SetBool(IsGroundedHash, isGrounded);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.tag == "Finish")
-        {
-            isFinish = true;
-        }
-
-        if (collision.gameObject.tag == "Dead")
-        {
-            isDead = true;
-        }
+        if (collision.CompareTag("Finish")) isFinish = true;
+        if (collision.CompareTag("Dead")) isDead = true;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.tag == "ExtraJump")
+        if (collision.gameObject.CompareTag("ExtraJump"))
         {
             jumpForce *= 1.5f;
-            if (jumpForce > 750f)
-            {
-                jumpForce = 750f;
-            }
+            jumpForce = Mathf.Min(jumpForce, 750f);
         }
-        if (collision.gameObject.tag == "LessJump")
+        else if (collision.gameObject.CompareTag("LessJump"))
         {
             jumpForce *= 0.5f;
-            if (jumpForce < 250f)
-            {
-                jumpForce = 250f;
-            }
+            jumpForce = Mathf.Max(jumpForce, 250f);
         }
     }
 
-    public bool IsFinish
-    {
-        get
-        {
-            return isFinish;
-        }
-    }
-
-    public bool IsDead
-    {
-        get
-        {
-            return isDead;
-        }
-    }
+    public bool IsFinish => isFinish;
+    public bool IsDead => isDead;
 }

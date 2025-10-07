@@ -12,22 +12,14 @@ public class PauseMenuScript : MonoBehaviour
 
     void Update()
     {
-        EscapeControl();
+        // Only check for escape if player object is assigned
+        if (player != null) EscapeControl();
     }
 
     public void EscapeControl()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) && player.activeSelf)
-        {
-            if (isPaused)
-            {
-                ResumeGame();
-            }
-            if (!isPaused)
-            {
-                PauseGame();
-            }
-        }
+        if (!Input.GetKeyDown(KeyCode.Escape) || !player.activeSelf) return;
+        if (isPaused) ResumeGame(); else PauseGame();
     }
 
     private string GetActiveSceneName()

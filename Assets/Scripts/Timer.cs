@@ -13,7 +13,6 @@ public class Timer : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
         Time.timeScale = 1f;
     }
 
@@ -23,7 +22,6 @@ public class Timer : MonoBehaviour
         if(isTimerRunning)
         {
             time += Time.deltaTime;
-
             UpdateTimer();
         }
     }
@@ -38,7 +36,7 @@ public class Timer : MonoBehaviour
     public void ResetTimer()
     {
         time = 0f;
-        timerText.text = time.ToString("F2");
+        if (timerText != null) timerText.text = time.ToString("F2");
     }
 
     public void ResumeTimer()
@@ -48,7 +46,7 @@ public class Timer : MonoBehaviour
 
     public void UpdateTimer()
     {
-        timerText.text = time.ToString("F2");
+        if (timerText != null) timerText.text = time.ToString("F2");
     }
 
     public string GetTime()
