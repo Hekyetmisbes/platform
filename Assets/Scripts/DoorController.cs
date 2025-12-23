@@ -9,6 +9,9 @@ public class DoorController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI uiText;
 
     [SerializeField] private LevelLoader levelLoader;
+    [SerializeField] private string lockedMessage = "Locked: Earn 1 star in previous levels";
+    [SerializeField] private GameObject lockIcon;
+    private bool isLocked = false;
 
     void Update()
     {
@@ -18,6 +21,7 @@ public class DoorController : MonoBehaviour
     void PlayScene()
     {
         var keyboard = Keyboard.current;
+        if (isLocked) return;
         if (isPlayerNear && keyboard != null && keyboard.eKey.wasPressedThisFrame) levelLoader?.LoadLevel(levelName);
     }
 
@@ -28,7 +32,7 @@ public class DoorController : MonoBehaviour
         if (uiText != null)
         {
             uiText.gameObject.SetActive(true);
-            uiText.text = "Press 'E' to Enter";
+            uiText.text = isLocked ? lockedMessage : "Press 'E' to Enter";
         }
     }
 
@@ -37,5 +41,15 @@ public class DoorController : MonoBehaviour
         if (!other.CompareTag("Player")) return;
         isPlayerNear = false;
         if (uiText != null) uiText.gameObject.SetActive(false);
+    }
+
+    public void SetLocked(bool locked, string message = null)
+    {
+        isLocked = locked;
+        if (!string.IsNullOrWhiteSpace(message))
+        {
+            lockedMessage = message;
+        }
+        if (lockIcon != null) lockIcon.SetActive(isLocked);
     }
 }

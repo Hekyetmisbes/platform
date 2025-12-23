@@ -15,6 +15,7 @@ public class LevelSelection : MonoBehaviour
     {
         InitializeDoorsAndStars();
         UpdateDoorStars();
+        UpdateDoorLocks();
     }
 
     // Kapılar ve yıldız gruplarını hiyerarşiye göre eşleştir
@@ -57,6 +58,33 @@ public class LevelSelection : MonoBehaviour
 
             // Update Star Visuals for Door
             UpdateStarVisual(i, yildizSayisi);
+        }
+    }
+
+    void UpdateDoorLocks()
+    {
+        Dictionary<int, int> starsData = starsSystem.GetAllStars();
+
+        for (int i = 0; i < doors.Length; i++)
+        {
+            int levelNumber = i + 1;
+            bool locked = false;
+
+            for (int prevLevel = 1; prevLevel < levelNumber; prevLevel++)
+            {
+                int stars = starsData.ContainsKey(prevLevel) ? starsData[prevLevel] : 0;
+                if (stars < 1)
+                {
+                    locked = true;
+                    break;
+                }
+            }
+
+            DoorController doorController = doors[i].GetComponent<DoorController>();
+            if (doorController != null)
+            {
+                doorController.SetLocked(locked);
+            }
         }
     }
 
