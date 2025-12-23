@@ -7,6 +7,7 @@ public class CountdownManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI countdownText; // Text elemanını atayın. Eğer TMP kullanıyorsanız TextMeshProUGUI kullanın.
     private float countdownTime = 3f; // Geri sayım başlangıç değeri.
     [SerializeField] private GameObject gameplayElements; // Oyun elemanlarını buraya ekleyin.
+    [SerializeField] private GameObject[] extraGameplayElements; // Geri sayımdan sonra aktif olacak ek UI/objeler.
 
     [SerializeField] private GameObject timeUI;
 
@@ -49,7 +50,15 @@ public class CountdownManager : MonoBehaviour
         isCountdownActive = false;
 
         countdownText.gameObject.SetActive(false);
-        gameplayElements.SetActive(true);
+        if (gameplayElements != null) gameplayElements.SetActive(true);
+        if (extraGameplayElements != null)
+        {
+            for (int i = 0; i < extraGameplayElements.Length; i++)
+            {
+                var element = extraGameplayElements[i];
+                if (element != null) element.SetActive(true);
+            }
+        }
     }
 
     private IEnumerator StartCountdown(float duration, GameObject uiElement, TextMeshProUGUI textElement, bool updateText)

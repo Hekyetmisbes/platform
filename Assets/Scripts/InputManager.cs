@@ -7,6 +7,8 @@ public class InputManager : MonoBehaviour
 {
     public static InputManager Instance { get; private set; }
 
+    [SerializeField] VirtualJoystick joystick;
+
     // Public read-only properties other scripts will query each frame
     public float Horizontal { get; private set; }
     public bool JumpDown { get; private set; }
@@ -59,6 +61,13 @@ public class InputManager : MonoBehaviour
             padRestart = gamepad.startButton.wasPressedThisFrame;
         }
 
+        // Joystick (UI)
+        float joyHorizontal = 0f;
+        if (joystick != null)
+        {
+            joyHorizontal = joystick.Horizontal;
+        }
+
         // Touch fallback for simple control: first touch -> jump on tap, horizontal by touch position
         float touchHorizontal = 0f;
         bool touchJump = false;
@@ -91,10 +100,14 @@ public class InputManager : MonoBehaviour
             touchRestart = pressedTouches >= 2;
         }
 
-        // Preference order: UI buttons (explicit), keyboard, touch
+        // Preference order: UI buttons, joystick, keyboard, gamepad, touch
         if (uiHorizontal != 0f)
         {
             Horizontal = uiHorizontal;
+        }
+        else if (Mathf.Abs(joyHorizontal) > 0.001f)
+        {
+            Horizontal = joyHorizontal;
         }
         else if (Mathf.Abs(kbHorizontal) > 0.001f)
         {
