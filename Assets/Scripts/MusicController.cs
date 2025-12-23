@@ -18,7 +18,7 @@ public class MusicController : MonoBehaviour
     {
         if (!isPreloaded)
         {
-            PreloadMusicClips();
+            StartCoroutine(PreloadMusicClips());
             isPreloaded = true;
         }
         PlayRandomTrack();
@@ -39,13 +39,23 @@ public class MusicController : MonoBehaviour
         }
     }
 
-    void PreloadMusicClips()
+    System.Collections.IEnumerator PreloadMusicClips()
     {
+        if (musicClips == null || musicClips.Length == 0) yield break;
+
         foreach (var clip in musicClips)
         {
-            audioSource.clip = clip;
-            audioSource.Play();
-            audioSource.Stop();
+            if (clip == null) continue;
+
+            if (clip.loadState == AudioDataLoadState.Unloaded)
+            {
+                clip.LoadAudioData();
+            }
+
+            while (clip.loadState == AudioDataLoadState.Loading)
+            {
+                yield return null; // spread load over frames to avoid a scene hitch
+            }
         }
     }
 
