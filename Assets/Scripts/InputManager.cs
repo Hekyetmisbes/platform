@@ -145,4 +145,9 @@ public class InputManager : MonoBehaviour
     {
         uiRestartPressed = true;
     }
+
+    public void SetJoystick(VirtualJoystick value)
+    {
+        joystick = value;
+    }
 }
