@@ -6,10 +6,21 @@ public class Level5Anim : MonoBehaviour
     private PlayerController playerController;
 
     private bool isFadingOut = true;
+    private SpriteRenderer playerRenderer;
+
+    void Awake()
+    {
+        if (playerController != null)
+        {
+            playerRenderer = playerController.GetComponent<SpriteRenderer>();
+        }
+    }
 
     void AnimationEvent()
     {
-        Color color = playerController.GetComponent<SpriteRenderer>().color;
+        if (playerRenderer == null) return;
+
+        Color color = playerRenderer.color;
         if (isFadingOut)
         {
             color.a = Mathf.Clamp(color.a - 0.05f, 0f, 1f);
@@ -26,12 +37,14 @@ public class Level5Anim : MonoBehaviour
                 isFadingOut = true;
             }
         }
-        playerController.GetComponent<SpriteRenderer>().color = color;
+        playerRenderer.color = color;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (playerController == null || playerRenderer == null) return;
+
         if(!playerController.IsDead || !playerController.IsFinish)
         {
             AnimationEvent();

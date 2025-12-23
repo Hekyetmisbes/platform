@@ -14,14 +14,32 @@ public class ShowStars : MonoBehaviour
     private int yildizSayisi = 0;
 
     [SerializeField] private GameObject player;
+    private int lastStars = -1;
+    private bool wasPlayerActive;
 
     // Update is called once per frame
     void Update()
     {
+        if (player == null) return;
+
+        bool isPlayerActive = player.activeSelf;
+        if (!isPlayerActive)
+        {
+            wasPlayerActive = false;
+            return;
+        }
+
+        if (!wasPlayerActive)
+        {
+            lastStars = -1;
+            wasPlayerActive = true;
+        }
+
         yildizSayisi = starsSystem.GetStars();
-        if(player.activeSelf)
+        if (yildizSayisi != lastStars)
         {
             ShowStarsMethod(yildizSayisi);
+            lastStars = yildizSayisi;
         }
     }
 
@@ -50,6 +68,5 @@ public class ShowStars : MonoBehaviour
                 break;
         }
 
-        Debug.Log($"Yıldızlar güncellendi: {stars} yıldız");
     }
 }
