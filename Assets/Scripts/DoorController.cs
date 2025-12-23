@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.InputSystem;
 
 public class DoorController : MonoBehaviour
 {
@@ -16,7 +17,8 @@ public class DoorController : MonoBehaviour
 
     void PlayScene()
     {
-        if (isPlayerNear && Input.GetKeyDown(KeyCode.E)) levelLoader?.LoadLevel(levelName);
+        var keyboard = Keyboard.current;
+        if (isPlayerNear && keyboard != null && keyboard.eKey.wasPressedThisFrame) levelLoader?.LoadLevel(levelName);
     }
 
     void OnTriggerEnter2D(Collider2D other)

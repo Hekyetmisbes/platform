@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class MusicController : MonoBehaviour
 {
@@ -25,7 +26,14 @@ public class MusicController : MonoBehaviour
 
     void Update()
     {
-        if ((!audioSource.isPlaying && musicClips.Length > 0) || Input.GetKeyDown(KeyCode.Z) || Input.GetKeyDown(KeyCode.C))
+        bool nextTrackInput = false;
+        var keyboard = Keyboard.current;
+        if (keyboard != null)
+        {
+            nextTrackInput = keyboard.zKey.wasPressedThisFrame || keyboard.cKey.wasPressedThisFrame;
+        }
+
+        if ((!audioSource.isPlaying && musicClips.Length > 0) || nextTrackInput)
         {
             PlayRandomTrack();
         }

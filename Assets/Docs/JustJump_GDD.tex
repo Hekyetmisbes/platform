@@ -1,0 +1,237 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\geometry{margin=2.2cm}
+
+\title{JUST JUMP \\ Game Design Document}
+\author{Internal Cyberpunk Platformer Team}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Game Pillars}
+\subsection{Skill-Based Flow}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Precision Platforming}: Movement is tuned through \texttt{CharacterMovement.cs} and \texttt{PlayerController.cs} for quick, readable reactions and deterministic physics.
+    \item \textbf{Time Pressure}: The \texttt{Timer.cs} HUD and asynchronous \texttt{CountdownManager.cs} opening set a constant race-against-the-clock tone.
+    \item \textbf{Readable Hazards}: Tags such as \texttt{Finish}, \texttt{Dead}, \texttt{ExtraJump} and \texttt{LessJump} communicate immediate cause and effect.
+\end{itemize}
+
+\subsection{Replayable Score Hunting}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{SQLite Powered Stars}: \texttt{StarsSystem.cs} reads/writes to \texttt{StarsDatabase.db}, persisting per-level records across sessions.
+    \item \textbf{Door-top Stars}: \texttt{LevelSelection.cs} mirrors records back onto door star clusters so the hub constantly advertises improvements.
+    \item \textbf{Quick Restart}: Dedicated input (\texttt{InputManager.RestartDown}) and pause menu options minimize downtime between attempts.
+\end{itemize}
+
+\subsection{Stylized Cyberpunk Atmosphere}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Visual Identity}: Uses Orbitron font family, neon HUD panels (see \texttt{Assets/Images}) and fading player shader beats (\texttt{Level5Anim.cs}).
+    \item \textbf{Audio Cohesion}: Nine Infraction phonk/synth tracks (\texttt{Assets/Musics}) cycle via \texttt{MusicController.cs} with pop-up track ID animation.
+    \item \textbf{Narrative Touches}: The \texttt{StoryScreen.cs} typewriter overlay introduces chapter beats before the player enters the hub.
+\end{itemize}
+
+\section{Core Gameplay}
+\subsection{Movement Model}
+\subsubsection{Horizontal Traversal}
+\begin{itemize}[leftmargin=*]
+    \item \texttt{CharacterMovement.moveSpeed} (default \(5\,\text{m/s}\)) drives rigidbody linear velocity and handles facing flips plus animator parameters.
+    \item Menu and hub avatars reuse the same component (\texttt{PickerCharacterController.cs}) to ensure parity with in-level feel.
+\end{itemize}
+
+\subsubsection{Jump System}
+\begin{itemize}[leftmargin=*]
+    \item Single press jump adds an upward impulse of \(250\,\text{N}\); cooldown of \(0.8\) seconds prevents double-spam.
+    \item Collision tags modulate jump force: \texttt{ExtraJump} ramps multiplier to \(1.5\times\) up to a \(750\) cap, \texttt{LessJump} halves it down to base value.
+\end{itemize}
+
+\subsubsection{Grounding \& Physics}
+\begin{itemize}[leftmargin=*]
+    \item Ground detection uses \texttt{Physics2D.OverlapCircle} anchored to designer-adjustable gizmo (\texttt{groundCheckPosition}, \texttt{groundLayer}).
+    \item Physics materials (e.g. \texttt{SlipperlyEffect.physicsMaterial2D}) support bespoke friction per surface.
+\end{itemize}
+
+\subsection{Environmental Interactions}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Doors}: \texttt{DoorController.cs} handles proximity prompts and loads named scenes through \texttt{LevelLoader}.
+    \item \textbf{Countdown Gates}: \texttt{CountdownManager.cs} locks gameplay until the two-phase countdown (hidden HUD prep + ``GO'') finishes.
+    \item \textbf{Stars Showcase}: \texttt{ShowStars.cs} reveals 0--3 star cluster during win screens based on the latest calculation.
+    \item \textbf{Audio Terminals}: \texttt{MusicUI.png} pops up at the start of tracks, while \texttt{VolumeControl.cs} exposes percentage steps via settings buttons.
+\end{itemize}
+
+\subsection{Damage \& Failure States}
+\begin{itemize}[leftmargin=*]
+    \item Triggering \texttt{Dead} colliders flips \texttt{PlayerController.IsDead}, halts the timer, and activates the red Game Over UI.
+    \item Entering \texttt{Finish} both freezes time and routes to the star ceremony UI. Designers can optionally chain to next scenes through \texttt{PauseMenuScript.NextScene}.
+\end{itemize}
+
+\subsection{Camera Behaviour}
+\begin{itemize}[leftmargin=*]
+    \item \texttt{CameraController.cs} keeps an offset follow with easing (\(5f\) lerp) and clamps \(x\) between designer-set bounds per level.
+    \item Facing-based lateral bias shifts the camera \(5\) units left when the avatar looks left to pre-expose upcoming jumps.
+\end{itemize}
+
+\subsection{Input Abstraction}
+\begin{itemize}[leftmargin=*]
+    \item \texttt{InputManager.cs} unifies keyboard, controller axes, and mobile touch proxies, offering \texttt{Horizontal}, \texttt{JumpDown}, and \texttt{RestartDown}.
+    \item UI buttons can call \texttt{SetUIHorizontal}, \texttt{PressUIJump}, \texttt{PressUIRestart} for virtual gamepad overlays.
+\end{itemize}
+
+\section{Game Modes}
+\subsection{Campaign Flow}
+\begin{itemize}[leftmargin=*]
+    \item Sequential levels (\texttt{Level1.unity}--\texttt{Level10.unity}) escalate with moving platforms, spike pits, timing drills, and color-coded boosts.
+    \item Level scenes are indexed after menu scenes (\texttt{MainMenu}, \texttt{Settings}, \texttt{Levels hub}) so the build index aligns with the database offset (\(-2\)).
+\end{itemize}
+
+\subsection{Level Hub}
+\begin{itemize}[leftmargin=*]
+    \item Scene \texttt{Levels.unity} acts as a diegetic menu: each door is paired with a star montage (parented under \texttt{Doors} / \texttt{Stars} transforms).
+    \item Star clusters show the \(\{0,1,2,3\}\) prefabs, matching dictionary data retrieved via \texttt{LevelSelection.UpdateDoorStars()}.
+\end{itemize}
+
+\subsection{Quick Join and Restart}
+\begin{itemize}[leftmargin=*]
+    \item \texttt{LevelLoader.cs} streams target scenes asynchronously, faking progress while Unity loads to prevent abrupt cuts.
+    \item From any level, players can pause-resume, restart, or travel back to the hub without tearing down global singletons (\texttt{InputManager} marked \texttt{DontDestroyOnLoad}).
+\end{itemize}
+
+\section{Progression \& Meta}
+\subsection{Timer-Driven Scoring}
+\begin{itemize}[leftmargin=*]
+    \item \texttt{Timer.cs} runs at \(\texttt{Time.timeScale}=1\) and exposes formatted strings for HUD + ``SCORE'' label on win/lose overlays.
+    \item Pausing or finishing calls \texttt{StopTimer()}, preserving the leaderboard submission value.
+\end{itemize}
+
+\subsection{Star Economy}
+\begin{itemize}[leftmargin=*]
+    \item Each level aims to award up to three stars. Thresholds live inside \texttt{StarsDatabase.db} table \texttt{BolumSureleri} with columns:
+    \begin{itemize}[leftmargin=1.5em]
+        \item \texttt{BolumNumarasi} (PK, matches build index - 2)
+        \item \texttt{StarTime1}, \texttt{StarTime2}, \texttt{StarTime3} (float seconds)
+        \item \texttt{PlayerFinishTime} (best personal time)
+        \item \texttt{YildizSayisi} (cached best star count)
+    \end{itemize}
+    \item \texttt{StarsCalculator.CalculateStars()} compares finish time to thresholds; \texttt{UpdateStars()} writes only when a new record beats the stored value.
+\end{itemize}
+
+\subsection{Unlock Logic}
+\begin{itemize}[leftmargin=*]
+    \item Present build displays progress visually but trusts the player to choose any door. Planned enhancement: lock doors until cumulative star targets are met, toggling door colliders and UI prompts.
+    \item Database already centralizes the data needed for gating, so designers only need to add a \texttt{requiredStars} column plus validation in \texttt{DoorController}.
+\end{itemize}
+
+\subsection{Narrative Delivery}
+\begin{itemize}[leftmargin=*]
+    \item \texttt{StoryScreen.cs} stores a string array of lore beats; pressing ``Story'' opens the panel and animates characters via \texttt{textSpeed}.
+    \item Future plan: integrate voiceover cues tied to the same array indexes so localization remains data-driven.
+\end{itemize}
+
+\section{Characters \& Entities}
+\subsection{Runner Avatar}
+\begin{itemize}[leftmargin=*]
+    \item States: Idle, Run, Jump, Dead, Finish (driven by \texttt{Animator} parameters \texttt{playerSpeed}, \texttt{isGrounded}).
+    \item Attributes: Move speed 5, Base jump 250, Jump frequency 0.8 sec, RigidBody mass tuned per prefab.
+    \item Feedback: Sprite flips automatically, `GO` countdown ensures spawn invulnerability until control is granted.
+\end{itemize}
+
+\subsection{Menu Pick Avatar}
+\begin{itemize}[leftmargin=*]
+    \item Uses \texttt{PickerCharacterController} to respond to input in the hub. ESC key delegates to \texttt{PauseMenuScript.EscapeControl()} for consistent UX.
+    \item \texttt{MirrorFacing.cs} lets background characters copy the main runner's orientation for cohesive staging.
+\end{itemize}
+
+\subsection{Environment Actors}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Doors}: Provide context text (``Press E to Enter'') and call \texttt{LevelLoader.LoadLevel(levelName)}.
+    \item \textbf{Platforms/Hazards}: Authored as prefabs (moving lifts, spikes, energy walls). Tags drive logic without bespoke scripts, keeping them data-friendly.
+    \item \textbf{Audio Nodes}: Music UI prefab animates via \texttt{MusicController}, hiding itself two seconds after each change.
+\end{itemize}
+
+\section{User Interface}
+\subsection{Menus}
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Main Menu}: Buttons tie into \texttt{MenuButtonController} (\texttt{Play}, \texttt{Settings}, \texttt{Quit}) and use neon sprite sheets in \texttt{Assets/Images/MENU.png}.
+    \item \textbf{Settings}: Hosts volume control, story playback, and key art panels.
+    \item \textbf{Pause \& Game Over}: \texttt{PauseMenuScript} guards against overlay conflicts (ignores ESC when finish/gameover UI is already active).
+\end{itemize}
+
+\subsection{HUD}
+\begin{itemize}[leftmargin=*]
+    \item Timer (top-left), star verdict (center), music toast (top-right), and optional narrative prompts.
+    \item Level countdown hides gameplay objects until completion, ensuring tutorial popups or story beats can finish before difficulty spikes.
+\end{itemize}
+
+\subsection{Localization Hooks}
+\begin{itemize}[leftmargin=*]
+    \item All dynamic text flows through TextMeshPro components (\texttt{TextMeshProUGUI}); translation ready by swapping string arrays.
+    \item Fonts rely on Orbitron family already generated as signed distance fields, simplifying glyph expansion.
+\end{itemize}
+
+\section{Audio Direction}
+\subsection{Music Library}
+\begin{itemize}[leftmargin=*]
+    \item Current track list: ``A.I.'', ``Close Your Eyes'', ``My Eyes'', ``Press Start'', ``Shock Absorber'', ``Digital Phonk'', ``Monster'', ``Out Of Control'', ``Little Ghost''.
+    \item Randomized playback prevents repetition; designer hotkeys \texttt{Z} / \texttt{C} force previous/next for test passes.
+\end{itemize}
+
+\subsection{SFX Roadmap}
+\begin{itemize}[leftmargin=*]
+    \item Placeholder: Unity defaults for jumps and finishes. Plan to add unique cues for countdown beeps, star awards, and music transitions.
+    \item Volume profile persists via \texttt{PlayerPrefs} so players retain settings across sessions.
+\end{itemize}
+
+\section{Technical Implementation}
+\subsection{Scene Topology}
+\begin{itemize}[leftmargin=*]
+    \item Build order: \texttt{MainMenu} (0), \texttt{Settings} (1), \texttt{Levels} hub (2), campaign levels (3--12).
+    \item Additional supporting scenes (\texttt{Level1--Level10}) live under \texttt{Assets/Scenes}.
+\end{itemize}
+
+\subsection{Data Layer}
+\begin{itemize}[leftmargin=*]
+    \item SQLite binaries live under \texttt{Assets/Plugins}. Database file (\texttt{StarsDatabase.db}) ships from project root and is accessed via relative path.
+    \item Consider relocating DB to \texttt{Application.persistentDataPath} on first boot for mobile platforms; update \texttt{DatabaseHandler} accordingly.
+\end{itemize}
+
+\subsection{Prefabs \& Content}
+\begin{itemize}[leftmargin=*]
+    \item Prefabs folder hosts reusable tiles (platform, spikes, boosters, UI widgets) enabling fast greyboxing.
+    \item Animations folder contains 47 clips and 47 controllers, already wired into the player and UI loops.
+\end{itemize}
+
+\subsection{Performance}
+\begin{itemize}[leftmargin=*]
+    \item Lightweight 2D physics and single-runner design target \(60\) FPS on mid-tier mobile.
+    \item Async loading plus minimal runtime allocation (InputManager caching) reduce GC spikes.
+\end{itemize}
+
+\section{Content Roadmap}
+\subsection{Short Term (Next Sprint)}
+\begin{itemize}[leftmargin=*]
+    \item Implement door locking based on star totals.
+    \item Add spike and moving platform prefabs with distinct audio cues.
+    \item Surface per-level goal times inside the HUD so players know exact targets mid-run.
+\end{itemize}
+
+\subsection{Mid Term}
+\begin{itemize}[leftmargin=*]
+    \item Introduce daily challenges referencing the same SQLite schema but rotating seed data.
+    \item Expand story beats with collectible logs triggered by in-level pickups.
+    \item Ship accessibility options (colorblind palettes, input remap UI layered over \texttt{InputManager}).
+\end{itemize}
+
+\subsection{Long Term}
+\begin{itemize}[leftmargin=*]
+    \item Multiplayer ghost races by exporting best runs into lightweight JSON and replaying in hub.
+    \item Procedural neon arenas for endless mode, reusing countdown/timer scaffolding but with escalating modifiers.
+\end{itemize}
+
+\end{document}
+

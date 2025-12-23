@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
 
 public class PauseMenuScript : MonoBehaviour
 {
@@ -18,7 +19,8 @@ public class PauseMenuScript : MonoBehaviour
 
     public void EscapeControl()
     {
-        if (!Input.GetKeyDown(KeyCode.Escape) || !player.activeSelf) return;
+        var keyboard = Keyboard.current;
+        if (keyboard == null || !keyboard.escapeKey.wasPressedThisFrame || !player.activeSelf) return;
         if (isPaused) ResumeGame(); else PauseGame();
     }
 
