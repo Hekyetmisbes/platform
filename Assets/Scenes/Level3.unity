@@ -2453,6 +2453,7 @@ MonoBehaviour:
   settingsMenuUI: {fileID: 2038527410}
   gameoverUI: {fileID: 858863177}
   finishUI: {fileID: 16687698}
+  hudSettingsButton: {fileID: 0}
 --- !u!4 &1091272513
 Transform:
   m_ObjectHideFlags: 0
@@ -2495,12 +2496,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   countdownText: {fileID: 1788395484}
   gameplayElements: {fileID: 770309638}
-  extraGameplayElements: []
   timeUI: {fileID: 220428366}
-  buttonsRoot: {fileID: 0}
-  joystickRoot: {fileID: 0}
-  joystick: {fileID: 0}
-  autoFindControls: 1
 --- !u!114 &1091272516
 MonoBehaviour:
   m_ObjectHideFlags: 0

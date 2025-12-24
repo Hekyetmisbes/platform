@@ -891,6 +891,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2881aea7b3b92c2408db1f92a2d3af8f, type: 3}
+--- !u!1 &339965287 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6067427862898558005, guid: 88911f8cf0b2b4148a5fd9df2e9782af, type: 3}
+  m_PrefabInstance: {fileID: 615406531}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &354183536
 GameObject:
   m_ObjectHideFlags: 0
@@ -1394,7 +1399,7 @@ MonoBehaviour:
   settingsMenuUI: {fileID: 863968267}
   gameoverUI: {fileID: 844249177}
   finishUI: {fileID: 985357669}
-  hudSettingsButton: {fileID: 0}
+  hudSettingsButton: {fileID: 339965287}
 --- !u!4 &516183238
 Transform:
   m_ObjectHideFlags: 0
@@ -1454,13 +1459,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   countdownText: {fileID: 1890237248}
   gameplayElements: {fileID: 1126252792}
-  extraGameplayElements: []
   timeUI: {fileID: 1593496440}
-  buttonsRoot: {fileID: 0}
-  joystickRoot: {fileID: 0}
-  joystick: {fileID: 0}
-  hudSettingsButton: {fileID: 0}
-  autoFindControls: 1
 --- !u!114 &516183242
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -20,9 +20,28 @@ public class DoorController : MonoBehaviour
 
     void PlayScene()
     {
-        var keyboard = Keyboard.current;
         if (isLocked) return;
-        if (isPlayerNear && keyboard != null && keyboard.eKey.wasPressedThisFrame) levelLoader?.LoadLevel(levelName);
+        if (!isPlayerNear) return;
+
+        bool usePressed = false;
+        var inputManager = InputManager.Instance;
+        if (inputManager != null)
+        {
+            usePressed = inputManager.UseDown || inputManager.JumpDown;
+        }
+        else
+        {
+            var keyboard = Keyboard.current;
+            if (keyboard != null)
+            {
+                usePressed = keyboard.eKey.wasPressedThisFrame;
+            }
+        }
+
+        if (usePressed)
+        {
+            levelLoader?.LoadLevel(levelName);
+        }
     }
 
     void OnTriggerEnter2D(Collider2D other)

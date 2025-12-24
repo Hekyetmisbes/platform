@@ -17,6 +17,6 @@ public class HudSettingsButton : MonoBehaviour
             return;
         }
 
-        cachedPauseMenu.OpenSettingsFromHUD();
+        cachedPauseMenu.PauseGame();
     }
 }

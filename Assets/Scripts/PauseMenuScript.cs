@@ -59,6 +59,7 @@ public class PauseMenuScript : MonoBehaviour
             return;
         }
         pauseMenuUI.SetActive(true);
+        if (hudSettingsButton != null) hudSettingsButton.SetActive(false);
         Time.timeScale = 0f;
         isPaused = true;
     }

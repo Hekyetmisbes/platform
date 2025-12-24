@@ -7,14 +7,12 @@ public class CountdownManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI countdownText; // Text elemanını atayın. Eğer TMP kullanıyorsanız TextMeshProUGUI kullanın.
     private float countdownTime = 3f; // Geri sayım başlangıç değeri.
     [SerializeField] private GameObject gameplayElements; // Oyun elemanlarını buraya ekleyin.
-    [SerializeField] private GameObject[] extraGameplayElements; // Geri sayımdan sonra aktif olacak ek UI/objeler.
 
     [SerializeField] private GameObject timeUI;
-    [SerializeField] private GameObject buttonsRoot;
-    [SerializeField] private GameObject joystickRoot;
-    [SerializeField] private VirtualJoystick joystick;
-    [SerializeField] private GameObject hudSettingsButton;
-    [SerializeField] private bool autoFindControls = true;
+    private GameObject buttonsRoot;
+    private GameObject joystickRoot;
+    private VirtualJoystick joystick;
+    private GameObject hudSettingsButton;
 
     private bool isCountdownActive;
     private bool controlsUnlocked;
@@ -73,14 +71,6 @@ public class CountdownManager : MonoBehaviour
 
         countdownText.gameObject.SetActive(false);
         if (gameplayElements != null) gameplayElements.SetActive(true);
-        if (extraGameplayElements != null)
-        {
-            for (int i = 0; i < extraGameplayElements.Length; i++)
-            {
-                var element = extraGameplayElements[i];
-                if (element != null) element.SetActive(true);
-            }
-        }
         controlsUnlocked = true;
         ApplyControlMode(true);
     }
@@ -118,11 +108,6 @@ public class CountdownManager : MonoBehaviour
 
     private void CacheControlReferences()
     {
-        if (!autoFindControls)
-        {
-            return;
-        }
-
         if (buttonsRoot == null)
         {
             buttonsRoot = FindInSceneByName("PlayButtons");
