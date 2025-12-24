@@ -9,7 +9,20 @@ public class PauseMenuScript : MonoBehaviour
     public GameObject settingsMenuUI;
     [SerializeField] GameObject gameoverUI;
     [SerializeField] GameObject finishUI;
+    [SerializeField] GameObject hudSettingsButton;
     private bool isPaused = false;
+
+    void Awake()
+    {
+        if (hudSettingsButton == null)
+        {
+            var found = GameObject.Find("HudSettingsButton");
+            if (found != null)
+            {
+                hudSettingsButton = found;
+            }
+        }
+    }
 
     void Update()
     {
@@ -34,6 +47,7 @@ public class PauseMenuScript : MonoBehaviour
     {
         pauseMenuUI.SetActive(false);
         settingsMenuUI.SetActive(false);
+        if (hudSettingsButton != null) hudSettingsButton.SetActive(true);
         Time.timeScale = 1f;
         isPaused = false;
     }
@@ -53,6 +67,24 @@ public class PauseMenuScript : MonoBehaviour
     {
         pauseMenuUI.SetActive(false);
         settingsMenuUI.SetActive(true);
+    }
+
+    public void OpenSettingsFromHUD()
+    {
+        if (gameoverUI != null && gameoverUI.activeSelf)
+        {
+            return;
+        }
+        if (finishUI != null && finishUI.activeSelf)
+        {
+            return;
+        }
+
+        if (pauseMenuUI != null) pauseMenuUI.SetActive(false);
+        if (settingsMenuUI != null) settingsMenuUI.SetActive(true);
+        if (hudSettingsButton != null) hudSettingsButton.SetActive(false);
+        Time.timeScale = 0f;
+        isPaused = true;
     }
 
     public void CloseSettings()

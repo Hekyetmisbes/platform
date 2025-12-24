@@ -36,6 +36,11 @@ public class InputManager : MonoBehaviour
         JumpDown = false;
         RestartDown = false;
 
+        var mode = MobileControlSettings.CurrentMode;
+        bool allowButtons = mode == MobileControlMode.Buttons;
+        bool allowJoystick = mode == MobileControlMode.Joystick;
+        bool allowJumpButton = allowButtons || allowJoystick;
+
         // Desktop / Editor inputs (keyboard + axes)
         float kbHorizontal = 0f;
         bool kbJump = false;
@@ -63,7 +68,7 @@ public class InputManager : MonoBehaviour
 
         // Joystick (UI)
         float joyHorizontal = 0f;
-        if (joystick != null)
+        if (allowJoystick && joystick != null)
         {
             joyHorizontal = joystick.Horizontal;
         }
@@ -101,9 +106,13 @@ public class InputManager : MonoBehaviour
         }
 
         // Preference order: UI buttons, joystick, keyboard, gamepad, touch
-        if (uiHorizontal != 0f)
+        float uiHorizontalValue = allowButtons ? uiHorizontal : 0f;
+        bool uiJump = allowJumpButton && uiJumpPressed;
+        bool uiRestart = allowButtons && uiRestartPressed;
+
+        if (uiHorizontalValue != 0f)
         {
-            Horizontal = uiHorizontal;
+            Horizontal = uiHorizontalValue;
         }
         else if (Mathf.Abs(joyHorizontal) > 0.001f)
         {
@@ -122,8 +131,8 @@ public class InputManager : MonoBehaviour
             Horizontal = touchHorizontal;
         }
 
-        JumpDown = uiJumpPressed || kbJump || padJump || touchJump;
-        RestartDown = uiRestartPressed || kbRestart || padRestart || touchRestart;
+        JumpDown = uiJump || kbJump || padJump || touchJump;
+        RestartDown = uiRestart || kbRestart || padRestart || touchRestart;
 
         // Clear one-shot UI flags after consumed this frame only if they were used
         if (uiJumpPressed) uiJumpPressed = false;
