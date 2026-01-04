@@ -172,10 +172,8 @@ public class StarsSystem : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (dbHandler != null)
-        {
-            dbHandler.Dispose();
-            dbHandler = null;
-        }
+        // DatabaseHandler doesn't hold persistent connections,
+        // so we just need to clear the reference
+        dbHandler = null;
     }
 }
