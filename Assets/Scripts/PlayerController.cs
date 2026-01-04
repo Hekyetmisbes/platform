@@ -4,6 +4,9 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
+    [Header("Configuration")]
+    [SerializeField] private GameConfig config;
+
     Rigidbody2D playerRB;
 
     Animator playerAnimator;
@@ -13,11 +16,9 @@ public class PlayerController : MonoBehaviour
 
     private bool isGrounded = false;
 
-    [SerializeField] private float moveSpeed = 5f;
-
-    [SerializeField] private float jumpForce = 250f;
-
-    private float jumpFrequency = 0.8f;
+    private float moveSpeed;
+    private float jumpForce;
+    private float jumpFrequency;
     private float nextJumpTime = 0f;
 
     [SerializeField] Transform groundCheckPosition;
@@ -37,6 +38,23 @@ public class PlayerController : MonoBehaviour
         playerAnimator = GetComponent<Animator>();
         movement = GetComponent<CharacterMovement>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+
+        // Initialize values from config
+        if (config != null)
+        {
+            moveSpeed = config.moveSpeed;
+            jumpForce = config.jumpForce;
+            jumpFrequency = config.jumpCooldown;
+            groundCheckRadius = config.groundCheckRadius;
+        }
+        else
+        {
+            // Fallback to default values if config is not assigned
+            moveSpeed = 5f;
+            jumpForce = 250f;
+            jumpFrequency = 0.8f;
+            groundCheckRadius = 0.2f;
+        }
     }
 
     void Update()
@@ -164,12 +182,14 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("ExtraJump"))
         {
-            jumpForce *= 1.5f;
+            float multiplier = config != null ? config.extraJumpMultiplier : 1.5f;
+            jumpForce *= multiplier;
             jumpForce = Mathf.Min(jumpForce, 750f);
         }
         else if (collision.gameObject.CompareTag("LessJump"))
         {
-            jumpForce *= 0.5f;
+            float multiplier = config != null ? config.lessJumpMultiplier : 0.5f;
+            jumpForce *= multiplier;
             jumpForce = Mathf.Max(jumpForce, 250f);
         }
     }

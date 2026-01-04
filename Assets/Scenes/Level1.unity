@@ -413,11 +413,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e8cc7304ccf2414591bfec255466e3d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  config: {fileID: 0}
   target: {fileID: 261783767}
   minY: 0
   maxY: 0
   minX: 0
   maxX: 60
+  lookAheadDistance: 3
+  lookAheadSpeed: 2
+  cameraOffset: {x: 0, y: 1}
 --- !u!82 &186020817
 AudioSource:
   m_ObjectHideFlags: 0
@@ -2480,7 +2484,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10c8df37fb4ad304aa5db9aa426377c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InputManager
-  joystick: {fileID: 0}
+  joystick: {fileID: 2059625725}
 --- !u!4 &1459101326
 Transform:
   m_ObjectHideFlags: 0
@@ -3027,6 +3031,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 200000, guid: 6b9f9a9c0d5d4e0f8f2a6b2c4c5d8e12, type: 3}
   m_PrefabInstance: {fileID: 2059625723}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2059625725 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 200003, guid: 6b9f9a9c0d5d4e0f8f2a6b2c4c5d8e12, type: 3}
+  m_PrefabInstance: {fileID: 2059625723}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f2d9a46a7c64d14bbf7d1f7f0a35b1e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &2087653084
 PrefabInstance:
   m_ObjectHideFlags: 0

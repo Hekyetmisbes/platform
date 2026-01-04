@@ -2046,11 +2046,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e8cc7304ccf2414591bfec255466e3d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  config: {fileID: 0}
   target: {fileID: 1524043135}
   minY: 0
   maxY: 0
   minX: 0
   maxX: 78.5
+  lookAheadDistance: 3
+  lookAheadSpeed: 2
+  cameraOffset: {x: 0, y: 1}
 --- !u!82 &350841424
 AudioSource:
   m_ObjectHideFlags: 0
@@ -3295,6 +3299,10 @@ PrefabInstance:
     - target: {fileID: 8500667211460740573, guid: 1bce5c13ed77476419fb0477f95b6799, type: 3}
       propertyPath: m_Name
       value: Enter
+      objectReference: {fileID: 0}
+    - target: {fileID: 8500667211460740573, guid: 1bce5c13ed77476419fb0477f95b6799, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
