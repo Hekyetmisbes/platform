@@ -9,6 +9,26 @@ public class MobileControlManager : MonoBehaviour
 {
     public static MobileControlManager Instance { get; private set; }
 
+    // Ensure there is always an instance in play mode, even if not placed in scenes.
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+    private static void Bootstrap()
+    {
+        if (Instance != null)
+        {
+            return;
+        }
+
+        var existing = FindAnyObjectByType<MobileControlManager>();
+        if (existing != null)
+        {
+            Instance = existing;
+            return;
+        }
+
+        var go = new GameObject("MobileControlManager");
+        go.AddComponent<MobileControlManager>();
+    }
+
     [Header("Control Roots")]
     [SerializeField] private GameObject buttonsRoot;
     [SerializeField] private GameObject joystickRoot;

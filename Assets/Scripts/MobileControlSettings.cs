@@ -24,7 +24,20 @@ public static class MobileControlSettings
     {
         if (PlayerPrefs.HasKey(PrefKey))
         {
-            CurrentMode = (MobileControlMode)PlayerPrefs.GetInt(PrefKey, (int)MobileControlMode.Buttons);
+            int stored = PlayerPrefs.GetInt(PrefKey, (int)MobileControlMode.Buttons);
+            bool isValid = stored == (int)MobileControlMode.Buttons || stored == (int)MobileControlMode.Joystick;
+
+            if (isValid)
+            {
+                CurrentMode = (MobileControlMode)stored;
+            }
+            else
+            {
+                // Reset to a safe default when an unexpected value is found so UI never stays disabled.
+                CurrentMode = MobileControlMode.Buttons;
+                PlayerPrefs.SetInt(PrefKey, (int)CurrentMode);
+                PlayerPrefs.Save();
+            }
         }
         else
         {
@@ -34,6 +47,12 @@ public static class MobileControlSettings
 
     public static void SetMode(MobileControlMode mode)
     {
+        // Guard against invalid enum casts so we never write unusable values.
+        if (mode != MobileControlMode.Buttons && mode != MobileControlMode.Joystick)
+        {
+            mode = MobileControlMode.Buttons;
+        }
+
         if (CurrentMode == mode)
         {
             return;
