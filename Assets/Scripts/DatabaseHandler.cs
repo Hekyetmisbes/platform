@@ -38,25 +38,61 @@ public class DatabaseHandler
 
     public object ExecuteScalar(string query, params (string, object)[] parameters)
     {
-        using (var connection = new SqliteConnection(connectionString))
+        if (string.IsNullOrEmpty(query))
         {
-            connection.Open();
-            using (var command = CreateCommand(query, connection, parameters))
+            GameLogger.Log("Query is null or empty", LogCategory.Database, LogLevel.Error);
+            return null;
+        }
+
+        try
+        {
+            using (var connection = new SqliteConnection(connectionString))
             {
-                return command.ExecuteScalar();
+                connection.Open();
+                using (var command = CreateCommand(query, connection, parameters))
+                {
+                    return command.ExecuteScalar();
+                }
             }
+        }
+        catch (SqliteException ex)
+        {
+            GameLogger.Log($"Database error: {ex.Message}\nQuery: {query}", LogCategory.Database, LogLevel.Error);
+            return null;
+        }
+        catch (Exception ex)
+        {
+            GameLogger.Log($"Unexpected error in ExecuteScalar: {ex.Message}", LogCategory.Database, LogLevel.Error);
+            return null;
         }
     }
 
     public void ExecuteNonQuery(string query, params (string, object)[] parameters)
     {
-        using (var connection = new SqliteConnection(connectionString))
+        if (string.IsNullOrEmpty(query))
         {
-            connection.Open();
-            using (var command = CreateCommand(query, connection, parameters))
+            GameLogger.Log("Query is null or empty", LogCategory.Database, LogLevel.Error);
+            return;
+        }
+
+        try
+        {
+            using (var connection = new SqliteConnection(connectionString))
             {
-                command.ExecuteNonQuery();
+                connection.Open();
+                using (var command = CreateCommand(query, connection, parameters))
+                {
+                    command.ExecuteNonQuery();
+                }
             }
+        }
+        catch (SqliteException ex)
+        {
+            GameLogger.Log($"Database error: {ex.Message}\nQuery: {query}", LogCategory.Database, LogLevel.Error);
+        }
+        catch (Exception ex)
+        {
+            GameLogger.Log($"Unexpected error in ExecuteNonQuery: {ex.Message}", LogCategory.Database, LogLevel.Error);
         }
     }
 

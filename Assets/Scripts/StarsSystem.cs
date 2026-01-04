@@ -42,11 +42,11 @@ public class StarsCalculator
         {
             const string updateQuery = "UPDATE BolumSureleri SET YildizSayisi = @YildizSayisi WHERE BolumNumarasi = @BolumNumarasi;";
             dbHandler.ExecuteNonQuery(updateQuery, ("@YildizSayisi", newStars), ("@BolumNumarasi", sceneNumber));
-            Debug.Log($"Stars updated to {newStars} for scene {sceneNumber}.");
+            GameLogger.Log($"Stars updated to {newStars} for scene {sceneNumber}", LogCategory.Database, LogLevel.Info);
         }
         else
         {
-            Debug.Log("New stars are not greater than current stars. No update performed.");
+            GameLogger.Log("New stars are not greater than current stars. No update performed", LogCategory.Database, LogLevel.Verbose);
         }
     }
 }
@@ -73,7 +73,7 @@ public class StarsSystem : MonoBehaviour
         starsCalculator = new StarsCalculator(dbHandler);
         sceneNumber = SceneManager.GetActiveScene().buildIndex - 2;
         LoadStarTimes();
-        Debug.Log($"Scene number is {sceneNumber}.");
+        GameLogger.Log($"Scene number is {sceneNumber}", LogCategory.Gameplay, LogLevel.Info);
     }
 
     void Update()
@@ -82,7 +82,7 @@ public class StarsSystem : MonoBehaviour
         {
             finishProcessed = true;
             float finishTime = timer.GetTimeF();
-            Debug.Log($"Player finish time: {finishTime}");
+            GameLogger.Log($"Player finish time: {finishTime}", LogCategory.Gameplay, LogLevel.Info);
 
             UpdateFinishTime(sceneNumber, finishTime);
         }
@@ -118,20 +118,40 @@ public class StarsSystem : MonoBehaviour
 
     private void UpdateFinishTime(int sceneNumber, float finishTime)
     {
-        const string selectQuery = "SELECT PlayerFinishTime FROM BolumSureleri WHERE BolumNumarasi = @BolumNumarasi;";
-        object result = dbHandler.ExecuteScalar(selectQuery, ("@BolumNumarasi", sceneNumber));
-
-        if (result == null || finishTime < Convert.ToSingle(result))
+        // Validate inputs
+        if (sceneNumber < 1 || sceneNumber > 10)
         {
-            const string updateQuery = "UPDATE BolumSureleri SET PlayerFinishTime = @PlayerFinishTime WHERE BolumNumarasi = @BolumNumarasi;";
-            dbHandler.ExecuteNonQuery(updateQuery, ("@PlayerFinishTime", finishTime), ("@BolumNumarasi", sceneNumber));
-
-            int stars = CalculateStarsLocal(finishTime);
-            starsCalculator.UpdateStars(sceneNumber, stars);
+            GameLogger.Log($"Invalid level number: {sceneNumber}", LogCategory.Gameplay, LogLevel.Error);
+            return;
         }
-        else
+
+        if (finishTime < 0)
         {
-            Debug.Log("Finish time is not better. No update performed.");
+            GameLogger.Log($"Invalid finish time: {finishTime}", LogCategory.Gameplay, LogLevel.Warning);
+            return;
+        }
+
+        try
+        {
+            const string selectQuery = "SELECT PlayerFinishTime FROM BolumSureleri WHERE BolumNumarasi = @BolumNumarasi;";
+            object result = dbHandler.ExecuteScalar(selectQuery, ("@BolumNumarasi", sceneNumber));
+
+            if (result == null || finishTime < Convert.ToSingle(result))
+            {
+                const string updateQuery = "UPDATE BolumSureleri SET PlayerFinishTime = @PlayerFinishTime WHERE BolumNumarasi = @BolumNumarasi;";
+                dbHandler.ExecuteNonQuery(updateQuery, ("@PlayerFinishTime", finishTime), ("@BolumNumarasi", sceneNumber));
+
+                int stars = CalculateStarsLocal(finishTime);
+                starsCalculator.UpdateStars(sceneNumber, stars);
+            }
+            else
+            {
+                GameLogger.Log("Finish time is not better. No update performed", LogCategory.Gameplay, LogLevel.Verbose);
+            }
+        }
+        catch (Exception ex)
+        {
+            GameLogger.Log($"Failed to update player time: {ex.Message}", LogCategory.Database, LogLevel.Error);
         }
     }
 

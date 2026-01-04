@@ -21,9 +21,6 @@ public class InputManager : MonoBehaviour
     bool uiRestartPressed = false;
     bool uiUsePressed = false;
     float uiHorizontal = 0f;
-    GameObject levelsButtonsRoot;
-    GameObject levelsJoystickRoot;
-    VirtualJoystick levelsJoystick;
 
     void Awake()
     {
@@ -38,15 +35,7 @@ public class InputManager : MonoBehaviour
 
     void OnEnable()
     {
-        SceneManager.sceneLoaded += HandleSceneLoaded;
-        MobileControlSettings.ModeChanged += HandleModeChanged;
         CacheJoystick();
-    }
-
-    void OnDisable()
-    {
-        SceneManager.sceneLoaded -= HandleSceneLoaded;
-        MobileControlSettings.ModeChanged -= HandleModeChanged;
     }
 
     void Update()
@@ -198,19 +187,13 @@ public class InputManager : MonoBehaviour
         uiUsePressed = true;
     }
 
+    /// <summary>
+    /// Sets the active virtual joystick for input.
+    /// Called by MobileControlManager when control mode changes.
+    /// </summary>
     public void SetJoystick(VirtualJoystick value)
     {
         joystick = value;
-    }
-
-    void HandleSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        CacheJoystick();
-        if (scene.name == "Levels")
-        {
-            CacheLevelControls();
-            ApplyLevelControls();
-        }
     }
 
     void CacheJoystick()
@@ -219,95 +202,7 @@ public class InputManager : MonoBehaviour
         {
             return;
         }
-        joystick = FindInSceneVirtualJoystick();
-    }
-
-    void HandleModeChanged(MobileControlMode mode)
-    {
-        if (SceneManager.GetActiveScene().name == "Levels")
-        {
-            if (levelsButtonsRoot == null || levelsJoystickRoot == null)
-            {
-                CacheLevelControls();
-            }
-            ApplyLevelControls();
-        }
-    }
-
-    void CacheLevelControls()
-    {
-        levelsButtonsRoot = FindInSceneByName("PlayButtons");
-        levelsJoystickRoot = FindInSceneByName("VirtualJoystickUI");
-        if (levelsJoystickRoot == null)
-        {
-            levelsJoystickRoot = FindInSceneByName("VirtualJoystick");
-        }
-
-        if (levelsJoystickRoot != null)
-        {
-            levelsJoystick = levelsJoystickRoot.GetComponentInChildren<VirtualJoystick>(true);
-        }
-
-        if (levelsJoystick == null)
-        {
-            levelsJoystick = FindInSceneVirtualJoystick();
-        }
-    }
-
-    void ApplyLevelControls()
-    {
-        var mode = MobileControlSettings.CurrentMode;
-        bool showButtons = mode == MobileControlMode.Buttons;
-        bool showJoystick = mode == MobileControlMode.Joystick;
-
-        if (levelsButtonsRoot != null) levelsButtonsRoot.SetActive(showButtons);
-        if (levelsJoystickRoot != null) levelsJoystickRoot.SetActive(showJoystick);
-
-        SetJoystick(showJoystick ? levelsJoystick : null);
-    }
-
-    static VirtualJoystick FindInSceneVirtualJoystick()
-    {
-        var allJoysticks = Resources.FindObjectsOfTypeAll<VirtualJoystick>();
-        for (int i = 0; i < allJoysticks.Length; i++)
-        {
-            var found = allJoysticks[i];
-            if (found == null)
-            {
-                continue;
-            }
-            if (!found.gameObject.scene.IsValid())
-            {
-                continue;
-            }
-            if (found.hideFlags != HideFlags.None)
-            {
-                continue;
-            }
-            return found;
-        }
-        return null;
-    }
-
-    static GameObject FindInSceneByName(string name)
-    {
-        var allObjects = Resources.FindObjectsOfTypeAll<GameObject>();
-        for (int i = 0; i < allObjects.Length; i++)
-        {
-            var obj = allObjects[i];
-            if (!obj.scene.IsValid())
-            {
-                continue;
-            }
-            if (obj.hideFlags != HideFlags.None)
-            {
-                continue;
-            }
-            if (obj.name == name)
-            {
-                return obj;
-            }
-        }
-        return null;
+        // Try to find joystick in scene on startup
+        joystick = FindAnyObjectByType<VirtualJoystick>();
     }
 }
