@@ -1,0 +1,5 @@
+C:/Users/hekye/OneDrive/Documents/Unity/platform/.utmp/RelWithDebInfo/3c6e73o1/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/hekye/OneDrive/Documents/Unity/platform/.utmp/RelWithDebInfo/3c6e73o1/armeabi-v7a/CMakeFiles/rebuild_cache.dir
+C:/Users/hekye/OneDrive/Documents/Unity/platform/.utmp/RelWithDebInfo/3c6e73o1/armeabi-v7a/FramePacing/CMakeFiles/swappywrapper.dir
+C:/Users/hekye/OneDrive/Documents/Unity/platform/.utmp/RelWithDebInfo/3c6e73o1/armeabi-v7a/FramePacing/CMakeFiles/edit_cache.dir
+C:/Users/hekye/OneDrive/Documents/Unity/platform/.utmp/RelWithDebInfo/3c6e73o1/armeabi-v7a/FramePacing/CMakeFiles/rebuild_cache.dir
