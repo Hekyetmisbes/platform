@@ -81,7 +81,19 @@ public class MobileControlManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Forces a refresh of control references and re-applies the current mode.
+    /// Useful when controls are initially inactive in the scene.
+    /// </summary>
+    public void RefreshAndApplyControls()
+    {
+        GameLogger.Log("Forcing control refresh and re-apply", LogCategory.Mobile, LogLevel.Info);
+        CacheControlReferences(forceRefresh: true);
+        ApplyControlMode();
+    }
+
+    /// <summary>
     /// Applies the current mobile control mode (Buttons or Joystick).
+    /// Activates the appropriate controls based on user settings.
     /// </summary>
     public void ApplyControlMode()
     {
@@ -95,13 +107,14 @@ public class MobileControlManager : MonoBehaviour
         bool showButtons = mode == MobileControlMode.Buttons;
         bool showJoystick = mode == MobileControlMode.Joystick;
 
-        GameLogger.Log($"Applying control mode: {mode} (Buttons: {showButtons}, Joystick: {showJoystick})", LogCategory.Mobile, LogLevel.Verbose);
+        GameLogger.Log($"Applying control mode: {mode} (Buttons: {showButtons}, Joystick: {showJoystick})", LogCategory.Mobile, LogLevel.Info);
 
-        // Toggle UI visibility
+        // Always activate one control type and deactivate the other based on settings
         if (buttonsRoot != null)
         {
+            bool wasActive = buttonsRoot.activeSelf;
             buttonsRoot.SetActive(showButtons);
-            GameLogger.Log($"Buttons set to {showButtons}", LogCategory.Mobile, LogLevel.Verbose);
+            GameLogger.Log($"Buttons: {(wasActive ? "was active" : "was inactive")} -> now {(showButtons ? "active" : "inactive")}", LogCategory.Mobile, LogLevel.Info);
         }
         else if (showButtons)
         {
@@ -110,8 +123,9 @@ public class MobileControlManager : MonoBehaviour
 
         if (joystickRoot != null)
         {
+            bool wasActive = joystickRoot.activeSelf;
             joystickRoot.SetActive(showJoystick);
-            GameLogger.Log($"Joystick set to {showJoystick}", LogCategory.Mobile, LogLevel.Verbose);
+            GameLogger.Log($"Joystick: {(wasActive ? "was active" : "was inactive")} -> now {(showJoystick ? "active" : "inactive")}", LogCategory.Mobile, LogLevel.Info);
         }
         else if (showJoystick)
         {
@@ -121,6 +135,7 @@ public class MobileControlManager : MonoBehaviour
         if (hudSettingsButton != null)
         {
             hudSettingsButton.SetActive(true);
+            GameLogger.Log("HUD settings button activated", LogCategory.Mobile, LogLevel.Verbose);
         }
 
         // Update InputManager joystick reference
@@ -128,6 +143,7 @@ public class MobileControlManager : MonoBehaviour
         if (inputManager != null)
         {
             inputManager.SetJoystick(showJoystick ? virtualJoystick : null);
+            GameLogger.Log($"InputManager joystick reference {(showJoystick ? "set" : "cleared")}", LogCategory.Mobile, LogLevel.Verbose);
         }
         else
         {
@@ -181,13 +197,28 @@ public class MobileControlManager : MonoBehaviour
     /// </summary>
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        GameLogger.Log($"Scene loaded: {scene.name}, re-caching mobile controls", LogCategory.Mobile, LogLevel.Verbose);
+        GameLogger.Log($"Scene loaded: {scene.name}, re-caching mobile controls", LogCategory.Mobile, LogLevel.Info);
+
+        // Use coroutine to ensure scene is fully loaded before finding controls
+        StartCoroutine(ApplyControlsAfterSceneLoad());
+    }
+
+    /// <summary>
+    /// Coroutine to apply controls after scene has fully loaded.
+    /// Waits one frame to ensure all scene objects are initialized.
+    /// </summary>
+    private System.Collections.IEnumerator ApplyControlsAfterSceneLoad()
+    {
+        // Wait for end of frame to ensure scene is fully loaded
+        yield return new UnityEngine.WaitForEndOfFrame();
 
         // Force refresh control references for the new scene
         CacheControlReferences(forceRefresh: true);
 
-        // Apply control mode to new scene's controls
+        // Apply control mode to new scene's controls (will activate them based on settings)
         ApplyControlMode();
+
+        GameLogger.Log("Mobile controls applied after scene load", LogCategory.Mobile, LogLevel.Info);
     }
 
     private void OnModeChanged(MobileControlMode mode)

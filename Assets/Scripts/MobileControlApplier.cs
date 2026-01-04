@@ -17,7 +17,12 @@ public class MobileControlApplier : MonoBehaviour
         var controlManager = MobileControlManager.Instance;
         if (controlManager != null)
         {
-            controlManager.ApplyControlMode();
+            // Use RefreshAndApplyControls to ensure controls are found and activated
+            controlManager.RefreshAndApplyControls();
+        }
+        else
+        {
+            GameLogger.Log("MobileControlManager instance not found", LogCategory.Mobile, LogLevel.Warning);
         }
     }
 }
