@@ -8,34 +8,53 @@ public class VolumeControl : MonoBehaviour
     private float minVolume = 0.0f;
     [SerializeField] private TextMeshProUGUI volumeText;
 
+    private AudioManager audioManager;
+    private const string LegacyVolumeKey = "Volume";
+
     void Start()
     {
-        AudioListener.volume = PlayerPrefs.GetFloat("Volume");
-        volumeText.text = (AudioListener.volume * 100).ToString("0") + "%";
-    }
+        audioManager = AudioManager.Instance;
+        float initialVolume = audioManager != null
+            ? audioManager.MasterVolume
+            : PlayerPrefs.GetFloat(LegacyVolumeKey, 1f);
 
-    void Update()
-    {
-        AudioListener.volume = PlayerPrefs.GetFloat("Volume");
+        ApplyVolume(initialVolume, false);
     }
 
     public void IncreaseVolume()
     {
-        AudioListener.volume = Mathf.Clamp(AudioListener.volume + volumeStep, minVolume, maxVolume);
-        SaveVolume();
-        volumeText.text = (AudioListener.volume * 100).ToString("0") + "%";
+        float current = audioManager != null ? audioManager.MasterVolume : AudioListener.volume;
+        float next = Mathf.Clamp(current + volumeStep, minVolume, maxVolume);
+        ApplyVolume(next);
     }
 
     public void DecreaseVolume()
     {
-        AudioListener.volume = Mathf.Clamp(AudioListener.volume - volumeStep, minVolume, maxVolume);
-        SaveVolume();
-        volumeText.text = (AudioListener.volume * 100).ToString("0") + "%";
+        float current = audioManager != null ? audioManager.MasterVolume : AudioListener.volume;
+        float next = Mathf.Clamp(current - volumeStep, minVolume, maxVolume);
+        ApplyVolume(next);
     }
 
-    private void SaveVolume()
+    private void ApplyVolume(float volume, bool save = true)
     {
-        PlayerPrefs.SetFloat("Volume", AudioListener.volume);
-        PlayerPrefs.Save();
+        if (audioManager != null)
+        {
+            audioManager.SetMasterVolume(volume);
+        }
+        else
+        {
+            AudioListener.volume = volume;
+            if (save)
+            {
+                PlayerPrefs.SetFloat("MasterVolume", AudioListener.volume);
+                PlayerPrefs.SetFloat(LegacyVolumeKey, AudioListener.volume);
+                PlayerPrefs.Save();
+            }
+        }
+
+        if (volumeText != null)
+        {
+            volumeText.text = (volume * 100).ToString("0") + "%";
+        }
     }
 }

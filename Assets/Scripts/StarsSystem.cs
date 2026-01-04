@@ -131,6 +131,8 @@ public class StarsSystem : MonoBehaviour
             return;
         }
 
+        timer?.RecordLevelTime(sceneNumber, finishTime);
+
         try
         {
             const string selectQuery = "SELECT PlayerFinishTime FROM BolumSureleri WHERE BolumNumarasi = @BolumNumarasi;";

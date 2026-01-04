@@ -13,15 +13,38 @@ public class MusicController : MonoBehaviour
     private int currentTrackIndex = 0;
 
     private static bool isPreloaded = false;
+    private AudioManager audioManager;
+    private bool usingAudioManager;
 
     void Start()
     {
+        audioManager = AudioManager.Instance;
+        if (audioManager != null)
+        {
+            if (audioSource != null)
+            {
+                audioManager.SetMusicSource(audioSource);
+            }
+
+            if (musicClips != null && musicClips.Length > 0)
+            {
+                audioManager.SetPlaylist(musicClips, true, true);
+            }
+
+            audioManager.MusicTrackChanged += HandleMusicTrackChanged;
+            usingAudioManager = true;
+        }
+
         if (!isPreloaded)
         {
             StartCoroutine(PreloadMusicClips());
             isPreloaded = true;
         }
-        PlayRandomTrack();
+
+        if (!usingAudioManager)
+        {
+            PlayRandomTrack();
+        }
     }
 
     void Update()
@@ -31,6 +54,20 @@ public class MusicController : MonoBehaviour
         if (keyboard != null)
         {
             nextTrackInput = keyboard.zKey.wasPressedThisFrame || keyboard.cKey.wasPressedThisFrame;
+        }
+
+        if (usingAudioManager && audioManager != null)
+        {
+            if (nextTrackInput)
+            {
+                audioManager.PlayNextTrack(true);
+            }
+
+            if (!audioManager.IsMusicPlaying)
+            {
+                audioManager.PlayNextTrack(true);
+            }
+            return;
         }
 
         if ((!audioSource.isPlaying && musicClips.Length > 0) || nextTrackInput)
@@ -97,6 +134,16 @@ public class MusicController : MonoBehaviour
         musicUI.SetActive(false);
     }
 
+    private void HandleMusicTrackChanged(AudioClip clip, int trackIndex)
+    {
+        if (clip == null || musicNameText == null || musicUI == null) return;
+
+        musicUI.SetActive(true);
+        musicNameText.text = clip.name;
+        StartCoroutine(DisableMusicUIAfterAnimation());
+        currentTrackIndex = trackIndex;
+    }
+
     private int GetRandomTrackIndex()
     {
         return Random.Range(0, musicClips.Length);
@@ -105,5 +152,13 @@ public class MusicController : MonoBehaviour
     public void PlayRandomTrack()
     {
         PlayMusic(GetRandomTrackIndex());
+    }
+
+    private void OnDestroy()
+    {
+        if (audioManager != null)
+        {
+            audioManager.MusicTrackChanged -= HandleMusicTrackChanged;
+        }
     }
 }

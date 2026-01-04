@@ -68,5 +68,11 @@ public class ShowStars : MonoBehaviour
                 break;
         }
 
+        if (stars > 0 && player != null)
+        {
+            AudioManager.Instance?.PlaySfx(SfxType.Star);
+            ParticleEffectsManager.Instance?.Play(ParticleEffectType.Star, player.transform.position);
+        }
+
     }
 }

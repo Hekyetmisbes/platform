@@ -2927,3 +2927,93 @@ The recommended roadmap prioritizes critical fixes first, followed by high-impac
 1. Implement sprite atlases in Unity Editor using the provided guide
 2. Consider beginning Phase 5 (Polish & Features) or Phase 6 (Accessibility & Mobile)
 3. Profile game performance to measure impact of Phase 4 improvements
+
+---
+
+### 2026-01-04 - Phase 5: Polish & Features (COMPLETED)
+
+#### 1. Audio System Improvements
+**Files:**
+- `Assets/Scripts/Audio/AudioManager.cs` (NEW)
+- `Assets/Scripts/MusicController.cs`
+- `Assets/Scripts/VolumeControl.cs`
+- `Assets/Scripts/PlayerController.cs`
+- `Assets/Scripts/ShowStars.cs`
+
+**Issue:** Music and effects were split across multiple scripts with no centralized volume persistence or gameplay-triggered sounds.
+
+**Solution:**
+- Added singleton AudioManager with playlist control, SFX routing, and PlayerPrefs-backed master/music/SFX volumes
+- MusicController now delegates playback/UI updates through AudioManager
+- PlayerController triggers jump/land/death/finish sounds; star awards play SFX
+- VolumeControl now adjusts master volume through AudioManager while retaining legacy fallback
+
+**Impact:**
+- Consistent audio pipeline with persistent settings
+- Gameplay feedback for core actions (jump, land, finish, death, star awards)
+- Cleaner integration point for future audio tuning and UI sliders
+
+#### 2. Star Time Threshold Review Toolkit
+**Files:**
+- `Assets/Editor/StarThresholdTuner.cs` (NEW)
+- `Assets/Scripts/Timer.cs`
+- `Assets/Scripts/StarsSystem.cs`
+
+**Issue:** No workflow to audit or adjust per-level star thresholds using real completion data.
+
+**Solution:**
+- Timer now records per-level completion stats and suggests thresholds using GameConfig multipliers
+- StarsSystem logs each finish time into the analytics helper
+- New editor window loads/saves thresholds from the SQLite DB and surfaces suggested values with recorded run stats
+
+**Impact:**
+- Data-backed balancing loop for star targets
+- Faster iteration on level timings without manual SQL edits
+- Clear visibility into fastest/average/slowest runs per level
+
+#### 3. Particle Effects Pipeline
+**Files:**
+- `Assets/Scripts/Effects/ParticleEffectsManager.cs` (NEW)
+- `Assets/Scripts/PlayerController.cs`
+- `Assets/Scripts/ShowStars.cs`
+
+**Issue:** No centralized particle spawning or event-driven effects for core actions.
+
+**Solution:**
+- Created pooled-friendly ParticleEffectsManager with jump/land/death/finish/star hooks
+- PlayerController now spawns jump/land/death/finish effects; star awards trigger visuals at the player
+
+**Impact:**
+- Plug-and-play VFX integration aligned with the object pool
+- Immediate visual feedback for key gameplay moments, ready for art drop-in
+
+#### 4. Tutorial System
+**Files:**
+- `Assets/Scripts/Tutorial/TutorialManager.cs` (NEW)
+
+**Issue:** First-time players lacked guided onboarding and skip/replay controls.
+
+**Solution:**
+- Added lightweight step-based tutorial controller with InputManager integration
+- Auto-starts on early levels, tracks completion via PlayerPrefs, supports skip and contextual hints
+
+**Impact:**
+- Guided first-play experience without disrupting returning players
+- Configurable steps and triggers for future content expansion
+
+#### 5. Level Themes
+**Files:**
+- `Assets/Scripts/Theming/LevelTheme.cs` (NEW)
+- `Assets/Scripts/Theming/LevelThemeManager.cs` (NEW)
+
+**Issue:** No structure for per-level visual/audio theming.
+
+**Solution:**
+- Added LevelTheme ScriptableObject for colors/materials/backgrounds plus optional music override
+- Theme manager applies per-level themes, updates camera/background/environment renderers, and can drive music overrides via AudioManager
+
+**Impact:**
+- Consistent pipeline for distinct level looks and sounds
+- Easier art direction updates without code changes
+
+**Status:** Phase 5 polish and feature tasks implemented. Proceed to validation and device checks before moving into Phase 6 accessibility/mobile work.

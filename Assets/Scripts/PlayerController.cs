@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour
     SpriteRenderer spriteRenderer;
 
     private bool isGrounded = false;
+    private bool wasGrounded = false;
 
     private float moveSpeed;
     private float jumpForce;
@@ -28,6 +29,9 @@ public class PlayerController : MonoBehaviour
     private bool isFinish = false;
     private bool isDead = false;
 
+    private AudioManager audioManager;
+    private ParticleEffectsManager particleEffects;
+
     // Animator parameter hashes
     private static readonly int PlayerSpeedHash = Animator.StringToHash("playerSpeed");
     private static readonly int IsGroundedHash = Animator.StringToHash("isGrounded");
@@ -38,6 +42,8 @@ public class PlayerController : MonoBehaviour
         playerAnimator = GetComponent<Animator>();
         movement = GetComponent<CharacterMovement>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        audioManager = AudioManager.Instance;
+        particleEffects = ParticleEffectsManager.Instance != null ? ParticleEffectsManager.Instance : FindObjectOfType<ParticleEffectsManager>();
 
         // Initialize values from config
         if (config != null)
@@ -55,6 +61,10 @@ public class PlayerController : MonoBehaviour
             jumpFrequency = 0.8f;
             groundCheckRadius = 0.2f;
         }
+
+        // Establish initial grounded state to avoid false landing triggers on start
+        GroundCheck();
+        wasGrounded = isGrounded;
     }
 
     void Update()
@@ -110,6 +120,8 @@ public class PlayerController : MonoBehaviour
                 SceneManager.LoadScene(SceneManager.GetActiveScene().name);
             }
         }
+
+        HandleLandingFeedback();
     }
 
     void HorizontalMove(InputManager im)
@@ -164,6 +176,8 @@ public class PlayerController : MonoBehaviour
     void Jump()
     {
         playerRB.AddForce(new Vector2(0f, jumpForce));
+        audioManager?.PlaySfx(SfxType.Jump);
+        particleEffects?.Play(ParticleEffectType.Jump, groundCheckPosition != null ? groundCheckPosition.position : transform.position);
     }
 
     void GroundCheck()
@@ -172,10 +186,31 @@ public class PlayerController : MonoBehaviour
         if (playerAnimator != null) playerAnimator.SetBool(IsGroundedHash, isGrounded);
     }
 
+    private void HandleLandingFeedback()
+    {
+        if (isGrounded && !wasGrounded)
+        {
+            audioManager?.PlaySfx(SfxType.Land);
+            particleEffects?.Play(ParticleEffectType.Land, groundCheckPosition != null ? groundCheckPosition.position : transform.position);
+        }
+
+        wasGrounded = isGrounded;
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Finish")) isFinish = true;
-        if (collision.CompareTag("Dead")) isDead = true;
+        if (collision.CompareTag("Finish") && !isFinish)
+        {
+            isFinish = true;
+            audioManager?.PlaySfx(SfxType.Finish);
+            particleEffects?.Play(ParticleEffectType.Finish, transform.position);
+        }
+        if (collision.CompareTag("Dead") && !isDead)
+        {
+            isDead = true;
+            audioManager?.PlaySfx(SfxType.Death);
+            particleEffects?.Play(ParticleEffectType.Death, transform.position);
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
