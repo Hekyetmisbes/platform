@@ -8,7 +8,7 @@ public class HudSettingsButton : MonoBehaviour
     {
         if (cachedPauseMenu == null)
         {
-            cachedPauseMenu = FindObjectOfType<PauseMenuScript>();
+            cachedPauseMenu = FindFirstObjectByType<PauseMenuScript>();
         }
 
         if (cachedPauseMenu == null)
