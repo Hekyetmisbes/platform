@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Centralized manager for mobile control UI and mode switching.
@@ -23,6 +24,7 @@ public class MobileControlManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
+            DontDestroyOnLoad(gameObject);
         }
         else if (Instance != this)
         {
@@ -35,11 +37,13 @@ public class MobileControlManager : MonoBehaviour
 
     private void OnEnable()
     {
+        SceneManager.sceneLoaded += OnSceneLoaded;
         MobileControlSettings.ModeChanged += OnModeChanged;
     }
 
     private void OnDisable()
     {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
         MobileControlSettings.ModeChanged -= OnModeChanged;
     }
 
@@ -83,6 +87,7 @@ public class MobileControlManager : MonoBehaviour
     {
         if (!controlsEnabled)
         {
+            GameLogger.Log("Controls are disabled, skipping ApplyControlMode", LogCategory.Mobile, LogLevel.Verbose);
             return;
         }
 
@@ -90,10 +95,33 @@ public class MobileControlManager : MonoBehaviour
         bool showButtons = mode == MobileControlMode.Buttons;
         bool showJoystick = mode == MobileControlMode.Joystick;
 
+        GameLogger.Log($"Applying control mode: {mode} (Buttons: {showButtons}, Joystick: {showJoystick})", LogCategory.Mobile, LogLevel.Verbose);
+
         // Toggle UI visibility
-        if (buttonsRoot != null) buttonsRoot.SetActive(showButtons);
-        if (joystickRoot != null) joystickRoot.SetActive(showJoystick);
-        if (hudSettingsButton != null) hudSettingsButton.SetActive(true);
+        if (buttonsRoot != null)
+        {
+            buttonsRoot.SetActive(showButtons);
+            GameLogger.Log($"Buttons set to {showButtons}", LogCategory.Mobile, LogLevel.Verbose);
+        }
+        else if (showButtons)
+        {
+            GameLogger.Log("Button mode selected but buttonsRoot not found in scene", LogCategory.Mobile, LogLevel.Warning);
+        }
+
+        if (joystickRoot != null)
+        {
+            joystickRoot.SetActive(showJoystick);
+            GameLogger.Log($"Joystick set to {showJoystick}", LogCategory.Mobile, LogLevel.Verbose);
+        }
+        else if (showJoystick)
+        {
+            GameLogger.Log("Joystick mode selected but joystickRoot not found in scene", LogCategory.Mobile, LogLevel.Warning);
+        }
+
+        if (hudSettingsButton != null)
+        {
+            hudSettingsButton.SetActive(true);
+        }
 
         // Update InputManager joystick reference
         var inputManager = InputManager.Instance;
@@ -101,19 +129,24 @@ public class MobileControlManager : MonoBehaviour
         {
             inputManager.SetJoystick(showJoystick ? virtualJoystick : null);
         }
+        else
+        {
+            GameLogger.Log("InputManager instance not found", LogCategory.Mobile, LogLevel.Warning);
+        }
     }
 
     /// <summary>
     /// Caches references to control UI elements if not assigned in inspector.
     /// </summary>
-    private void CacheControlReferences()
+    /// <param name="forceRefresh">If true, re-finds all controls even if cached</param>
+    private void CacheControlReferences(bool forceRefresh = false)
     {
-        if (buttonsRoot == null)
+        if (buttonsRoot == null || forceRefresh)
         {
             buttonsRoot = FindInSceneByName("PlayButtons");
         }
 
-        if (joystickRoot == null)
+        if (joystickRoot == null || forceRefresh)
         {
             joystickRoot = FindInSceneByName("VirtualJoystickUI");
             if (joystickRoot == null)
@@ -122,20 +155,39 @@ public class MobileControlManager : MonoBehaviour
             }
         }
 
-        if (hudSettingsButton == null)
+        if (hudSettingsButton == null || forceRefresh)
         {
             hudSettingsButton = FindInSceneByName("HudSettingsButton");
         }
 
-        if (virtualJoystick == null && joystickRoot != null)
+        if (virtualJoystick == null || forceRefresh)
         {
-            virtualJoystick = joystickRoot.GetComponentInChildren<VirtualJoystick>(true);
+            if (joystickRoot != null)
+            {
+                virtualJoystick = joystickRoot.GetComponentInChildren<VirtualJoystick>(true);
+            }
+
+            if (virtualJoystick == null)
+            {
+                virtualJoystick = FindInSceneVirtualJoystick();
+            }
         }
 
-        if (virtualJoystick == null)
-        {
-            virtualJoystick = FindInSceneVirtualJoystick();
-        }
+        GameLogger.Log($"Mobile controls cached - Buttons: {buttonsRoot != null}, Joystick: {joystickRoot != null}, VirtualJoystick: {virtualJoystick != null}", LogCategory.Mobile, LogLevel.Verbose);
+    }
+
+    /// <summary>
+    /// Called when a new scene is loaded. Re-caches controls and applies mode.
+    /// </summary>
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        GameLogger.Log($"Scene loaded: {scene.name}, re-caching mobile controls", LogCategory.Mobile, LogLevel.Verbose);
+
+        // Force refresh control references for the new scene
+        CacheControlReferences(forceRefresh: true);
+
+        // Apply control mode to new scene's controls
+        ApplyControlMode();
     }
 
     private void OnModeChanged(MobileControlMode mode)
