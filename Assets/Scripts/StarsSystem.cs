@@ -146,12 +146,9 @@ public class StarsSystem : MonoBehaviour
         const string query = "SELECT BolumNumarasi, YildizSayisi FROM BolumSureleri;";
         Dictionary<int, int> starsData = new Dictionary<int, int>();
 
-        if (dbHandler == null)
-        {
-            dbHandler = new DatabaseHandler(databasePath);
-        }
+        DatabaseHandler handler = GetOrCreateHandler();
 
-        using (var reader = dbHandler.ExecuteReader(query))
+        using (var reader = handler.ExecuteReader(query))
         {
             while (reader.Read())
             {
@@ -162,5 +159,23 @@ public class StarsSystem : MonoBehaviour
         }
 
         return starsData;
+    }
+
+    private DatabaseHandler GetOrCreateHandler()
+    {
+        if (dbHandler == null)
+        {
+            dbHandler = new DatabaseHandler(databasePath);
+        }
+        return dbHandler;
+    }
+
+    private void OnDestroy()
+    {
+        if (dbHandler != null)
+        {
+            dbHandler.Dispose();
+            dbHandler = null;
+        }
     }
 }

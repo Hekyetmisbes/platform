@@ -29,8 +29,8 @@ public class Timer : MonoBehaviour
     public void StopTimer()
     {
         isTimerRunning = false;
-
-        Time.timeScale = 0f;
+        // Removed Time.timeScale = 0f to prevent freezing UI animations and other game systems
+        // Only the timer itself stops now, not the entire game
     }
 
     public void ResetTimer()

@@ -37,7 +37,7 @@ public class GameOverController : MonoBehaviour
     {
         if (timer != null)
         {
-            timer.GetType().GetMethod("StopTimer").Invoke(timer, null);
+            timer.StopTimer();
         }
     }
 

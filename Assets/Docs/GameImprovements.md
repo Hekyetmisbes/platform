@@ -2621,6 +2621,48 @@ The recommended roadmap prioritizes critical fixes first, followed by high-impac
 
 ---
 
-**Document Version:** 1.0
+**Document Version:** 1.1
 **Last Updated:** 2026-01-04
 **Next Review:** After Phase 1 completion
+
+---
+
+## Changelog
+
+### 2026-01-04 - Phase 1: Critical Fixes (COMPLETED)
+
+#### 1. Fixed Timer.StopTimer() - Removed Time.timeScale Usage ✅
+**File:** `Assets/Scripts/Timer.cs:33`
+**Issue:** StopTimer() was setting `Time.timeScale = 0f`, freezing all game time including UI animations, countdown timers, and physics globally.
+**Solution:** Removed `Time.timeScale = 0f` line. The timer now stops only itself by setting `isTimerRunning = false`, allowing other game systems to continue running normally.
+**Impact:**
+- UI animations continue during game over
+- Countdown timers work correctly
+- Physics and animations run smoothly
+- No more global game freeze
+
+#### 2. Fixed Reflection Usage in GameOverController ✅
+**File:** `Assets/Scripts/GameOverController.cs:40`
+**Issue:** Using reflection (`timer.GetType().GetMethod("StopTimer").Invoke(timer, null)`) to call StopTimer() method.
+**Solution:** Replaced with direct method call `timer.StopTimer()`.
+**Impact:**
+- Improved performance (no reflection overhead)
+- Compile-time type safety
+- Cleaner, more maintainable code
+- No risk of runtime failures from reflection
+
+#### 3. Added Proper Database Disposal in StarsSystem ✅
+**File:** `Assets/Scripts/StarsSystem.cs:149-151, 164-180`
+**Issue:** Database handler created without proper disposal, risking memory leaks and inconsistent state.
+**Solution:**
+- Created `GetOrCreateHandler()` method for centralized handler creation
+- Added `OnDestroy()` method to properly dispose database handler
+- Updated `GetAllStars()` to use the new helper method
+**Impact:**
+- Prevents memory leaks
+- Ensures proper resource cleanup
+- Better state management
+- Safer database operations
+
+**Status:** All Phase 1 critical fixes completed and tested.
+**Next Steps:** Begin Phase 2 (High Priority Improvements)
