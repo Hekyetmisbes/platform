@@ -129,32 +129,14 @@ public class InputManager : MonoBehaviour
             touchRestart = pressedTouches >= 2;
         }
 
-        // Preference order: UI buttons, joystick, keyboard, gamepad, touch
-        float uiHorizontalValue = allowButtons ? uiHorizontal : 0f;
+        // Apply input priority: UI buttons > joystick > keyboard > gamepad > touch
+        Horizontal = DetermineHorizontalInput(allowButtons, allowJoystick, uiHorizontal, joyHorizontal,
+                                               kbHorizontal, padHorizontal, touchHorizontal);
+
+        // Combine all jump inputs with mode filtering
         bool uiJump = allowJumpButton && uiJumpPressed;
         bool uiRestart = allowButtons && uiRestartPressed;
         bool uiUse = uiUsePressed;
-
-        if (uiHorizontalValue != 0f)
-        {
-            Horizontal = uiHorizontalValue;
-        }
-        else if (Mathf.Abs(joyHorizontal) > 0.001f)
-        {
-            Horizontal = joyHorizontal;
-        }
-        else if (Mathf.Abs(kbHorizontal) > 0.001f)
-        {
-            Horizontal = kbHorizontal;
-        }
-        else if (Mathf.Abs(padHorizontal) > 0.001f)
-        {
-            Horizontal = padHorizontal;
-        }
-        else
-        {
-            Horizontal = touchHorizontal;
-        }
 
         JumpDown = uiJump || kbJump || padJump || touchJump;
         RestartDown = uiRestart || kbRestart || padRestart || touchRestart;
@@ -164,6 +146,35 @@ public class InputManager : MonoBehaviour
         if (uiJumpPressed) uiJumpPressed = false;
         if (uiRestartPressed) uiRestartPressed = false;
         if (uiUsePressed) uiUsePressed = false;
+    }
+
+    /// <summary>
+    /// Determines horizontal input based on priority: UI > Joystick > Keyboard > Gamepad > Touch
+    /// </summary>
+    float DetermineHorizontalInput(bool allowButtons, bool allowJoystick, float ui, float joy,
+                                    float kb, float pad, float touch)
+    {
+        const float deadzone = 0.001f;
+
+        // Priority 1: UI Buttons (highest)
+        float uiValue = allowButtons ? ui : 0f;
+        if (Mathf.Abs(uiValue) > deadzone)
+            return uiValue;
+
+        // Priority 2: Virtual Joystick
+        if (allowJoystick && Mathf.Abs(joy) > deadzone)
+            return joy;
+
+        // Priority 3: Keyboard
+        if (Mathf.Abs(kb) > deadzone)
+            return kb;
+
+        // Priority 4: Gamepad
+        if (Mathf.Abs(pad) > deadzone)
+            return pad;
+
+        // Priority 5: Touch (lowest)
+        return touch;
     }
 
     // Methods for UI buttons to call (e.g. OnPointerDown/Up)
